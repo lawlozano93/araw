@@ -1,0 +1,328 @@
+.wizard {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Progress dots */
+.wizard-progress {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px;
+}
+
+.wizard-step-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.2s ease;
+}
+
+.wizard-step-dot.active {
+    background: var(--primary);
+}
+
+.wizard-step-dot.current {
+    transform: scale(1.4);
+}
+
+.wizard-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.wizard-back {
+    position: fixed;
+    bottom: 12px;
+    left: 20px;
+    background: none;
+    border: none;
+    color: var(--muted-foreground);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* Reading step */
+.reading-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    text-align: center;
+}
+
+.reading-content {
+    max-width: 500px;
+    font-size: 20px;
+    line-height: 1.8;
+    color: var(--foreground);
+    white-space: pre-wrap;
+}
+
+.reading-done {
+    margin-top: 48px;
+    padding: 10px 28px;
+    font-size: 13px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+/* Stream step */
+.stream-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.stream-editor {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 60px 40px 0;
+}
+
+.stream-textarea {
+    width: 100%;
+    max-width: 650px;
+    height: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--foreground);
+    background: transparent;
+}
+
+.stream-textarea::placeholder {
+    color: var(--border);
+}
+
+.stream-footer {
+    position: fixed;
+    bottom: 12px;
+    right: 20px;
+}
+
+.stream-footer button {
+    padding: 8px 20px;
+    font-size: 12px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.stream-footer button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Prompts step */
+.prompts-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 40px;
+    overflow-y: auto;
+}
+
+.prompts-title {
+    font-size: 14px;
+    color: var(--muted-foreground);
+    margin-bottom: 32px;
+}
+
+.prompts-list {
+    max-width: 500px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.prompt-item {
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.prompt-item:hover {
+    border-color: var(--muted-foreground);
+}
+
+.prompt-item.selected {
+    border-color: var(--primary);
+    background: var(--accent);
+}
+
+.prompt-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--foreground);
+}
+
+.prompt-tags {
+    display: none;
+}
+
+.prompts-footer {
+    margin-top: 32px;
+}
+
+.prompts-footer button {
+    padding: 10px 28px;
+    font-size: 13px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.prompts-footer button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Answer step */
+.answer-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.answer-prompt {
+    text-align: center;
+    padding: 24px 40px 0;
+}
+
+.answer-prompt-text {
+    font-size: 15px;
+    font-style: italic;
+    color: var(--muted-foreground);
+}
+
+.answer-editor {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 24px 40px 0;
+}
+
+.answer-textarea {
+    width: 100%;
+    max-width: 650px;
+    height: 180px;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--foreground);
+    background: transparent;
+}
+
+/* Actions in answer step */
+.answer-actions {
+    max-width: 650px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px 40px;
+}
+
+.answer-actions-header {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted-foreground);
+    margin-bottom: 12px;
+}
+
+.answer-action-input {
+    display: flex;
+    gap: 8px;
+}
+
+.answer-action-input input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 14px;
+    background: var(--background);
+    color: var(--foreground);
+}
+
+.answer-action-input input:focus {
+    outline: none;
+    border-color: var(--ring);
+}
+
+.answer-action-input button {
+    padding: 10px 16px;
+    font-size: 13px;
+    background: var(--muted);
+    color: var(--foreground);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.answer-action-list {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.answer-action-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--accent);
+    border-radius: calc(var(--radius) - 2px);
+    font-size: 14px;
+}
+
+.answer-action-remove {
+    background: none;
+    border: none;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.answer-footer {
+    position: fixed;
+    bottom: 12px;
+    right: 20px;
+}
+
+.answer-footer button {
+    padding: 8px 20px;
+    font-size: 12px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+}

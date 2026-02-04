@@ -1,0 +1,41 @@
+.dashboard {
+    padding: 24px;
+}
+
+.session-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.actions-section {
+    margin-top: 24px;
+}
+
+.actions-section h4 {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.empty-state {
+    color: var(--text-tertiary);
+    font-size: 14px;
+    font-style: italic;
+}
+
+.pending-count {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+}

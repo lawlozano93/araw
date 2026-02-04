@@ -1,0 +1,322 @@
+/* Fix corner artifacts */
+html,
+body,
+#root {
+    background: transparent !important;
+}
+
+/* TrayApp using Main App Theme Variables */
+
+.tray-container.dot-style {
+    padding: 12px;
+    height: 100vh;
+    margin: 0;
+    background: var(--popover);
+    color: var(--popover-foreground);
+    overflow-y: hidden;
+    /* No scrolling requested, relies on window height */
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-lg);
+    font-family: var(--font-sans);
+}
+
+.tray-container *:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+    border-radius: 4px;
+}
+
+/* Header */
+.tray-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px 16px;
+}
+
+.tray-date {
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.3px;
+}
+
+.tray-streak {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary);
+    background: color-mix(in srgb, var(--primary), transparent 90%);
+    padding: 4px 8px;
+    border-radius: 100px;
+}
+
+.tray-divider {
+    display: none;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 0 4px 16px;
+}
+
+.tray-cta-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    /* derived from radius? User CSS had radius-md calc */
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: var(--shadow-sm);
+}
+
+.tray-cta-btn:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.cta-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-radius: 50%;
+    font-size: 12px;
+    padding-left: 2px;
+}
+
+.cta-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 2px;
+}
+
+.cta-subtitle {
+    font-size: 11px;
+    color: var(--muted-foreground);
+}
+
+.session-complete-banner {
+    text-align: center;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+/* Sections */
+.tray-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.1s;
+}
+
+.section-header:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted-foreground);
+}
+
+.section-meta {
+    font-size: 11px;
+    color: var(--muted-foreground);
+    font-weight: 500;
+}
+
+.section-content {
+    margin-top: 6px;
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+/* Items */
+.input-item,
+.action-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.1s;
+    border-bottom: 1px solid var(--border);
+}
+
+.input-item:last-child,
+.action-item:last-child {
+    border-bottom: none;
+}
+
+.input-item:hover,
+.action-item:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.input-checkbox,
+.action-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--muted-foreground);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: transparent;
+    transition: all 0.2s ease;
+}
+
+/* Checked State */
+.input-item:hover .input-checkbox,
+.action-item:hover .action-checkbox {
+    border-color: var(--primary);
+}
+
+.input-item.done .input-checkbox,
+.action-item.done .action-checkbox {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.input-label,
+.action-text {
+    font-size: 13px;
+    color: var(--foreground);
+    flex: 1;
+    font-weight: 500;
+}
+
+.action-item.done .action-text {
+    text-decoration: line-through;
+    color: var(--muted-foreground);
+}
+
+/* Quick Add */
+.quick-add {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: color-mix(in srgb, var(--muted), transparent 90%);
+}
+
+.plus-icon {
+    width: 18px;
+    text-align: center;
+    color: var(--muted-foreground);
+    font-size: 16px;
+    font-weight: 300;
+}
+
+.quick-add input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--foreground);
+    outline: none;
+}
+
+.quick-add input::placeholder {
+    color: var(--muted-foreground);
+    opacity: 0.7;
+}
+
+.shortcut-hint {
+    font-size: 10px;
+    color: var(--muted-foreground);
+    background: color-mix(in srgb, var(--muted), transparent 50%);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Footer */
+.tray-footer {
+    margin-top: auto;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid var(--border);
+    background: var(--card);
+    border-radius: var(--radius);
+}
+
+.footer-btn {
+    background: none;
+    border: none;
+    font-size: 11px;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+
+.footer-btn:hover {
+    color: var(--foreground);
+}
+
+/* Input Details Expansion */
+.input-arrow {
+    font-size: 10px;
+    color: var(--muted-foreground);
+    width: 16px;
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.input-group.expanded .input-arrow {
+    transform: rotate(180deg);
+}
+
+.input-details {
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--muted), transparent 95%);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--foreground);
+    border-bottom: 1px solid var(--border);
+    white-space: pre-wrap;
+}
+
+.empty-text {
+    font-style: italic;
+    color: var(--muted-foreground);
+}

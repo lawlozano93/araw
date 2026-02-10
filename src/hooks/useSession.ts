@@ -135,27 +135,27 @@ export function useActions(dateOverride?: string) {
     const [actions, setActions] = useState<ActionItem[]>([]);
     const today = dateOverride || getToday();
 
-    useEffect(() => {
-        const load = async () => {
-            try {
-                const entry = await loadEntry(today);
-                if (entry) {
-                    // Check if actions exist, otherwise empty
-                    setActions(entry.actions || []);
-                } else {
-                    setActions([]);
-                }
-            } catch {
-                const stored = localStorage.getItem(`actions-${today}`);
-                if (stored) {
-                    setActions(JSON.parse(stored));
-                }
+    const load = useCallback(async () => {
+        try {
+            const entry = await loadEntry(today);
+            if (entry) {
+                setActions(entry.actions || []);
+            } else {
+                setActions([]);
             }
-        };
+        } catch {
+            const stored = localStorage.getItem(`actions-${today}`);
+            if (stored) {
+                setActions(JSON.parse(stored));
+            }
+        }
+    }, [today]);
+
+    useEffect(() => {
         load();
         window.addEventListener('focus', load);
         return () => window.removeEventListener('focus', load);
-    }, [today]);
+    }, [load]);
 
     const saveActions = async (newActions: ActionItem[]) => {
         setActions(newActions);
@@ -188,8 +188,12 @@ export function useActions(dateOverride?: string) {
         ));
     };
 
+    const deleteAction = (id: string) => {
+        saveActions(actions.filter(a => a.id !== id));
+    };
+
     const pendingCount = actions.filter(a => !a.done).length;
     const completedCount = actions.filter(a => a.done).length;
 
-    return { actions, addAction, toggleAction, pendingCount, completedCount };
+    return { actions, addAction, toggleAction, deleteAction, pendingCount, completedCount, refresh: load };
 }

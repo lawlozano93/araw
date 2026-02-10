@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TitleBar } from './components/TitleBar/TitleBar';
 import { Dashboard } from './components/Dashboard/Dashboard';
 import { Wizard } from './components/Wizard/Wizard';
@@ -6,24 +6,29 @@ import { HistorySidebar } from './components/HistorySidebar/HistorySidebar';
 import { EntryViewer } from './components/EntryViewer/EntryViewer';
 import { TrayApp } from './components/TrayApp/TrayApp';
 import { Onboarding } from './components/Onboarding/Onboarding';
+import { Settings } from './components/Settings/Settings';
 import { useSession, useTheme, useActions } from './hooks/useSession';
-import { useTimer } from './hooks/useTimer';
 import { useWindowLabel } from './hooks/useWindowLabel';
 import './App.css';
 
-type View = 'dashboard' | 'wizard' | 'entry';
+type View = 'dashboard' | 'wizard' | 'entry' | 'settings';
 function App() {
   const windowLabel = useWindowLabel();
   const [view, setView] = useState<View>('dashboard');
   const [historyOpen, setHistoryOpen] = useState(false);
   const [selectedEntryDate, setSelectedEntryDate] = useState<string | null>(null);
   // TEST MODE: Allow selecting different dates for testing
-  const [testDate, setTestDate] = useState(new Date().toISOString().split('T')[0]);
+  const [testDate, setTestDate] = useState(() => {
+    return localStorage.getItem('testDate') || new Date().toISOString().split('T')[0];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('testDate', testDate);
+  }, [testDate]);
 
   const { session, loading, updateSession, onboardingComplete, completeOnboarding } = useSession(testDate); // Pass testDate
   const { theme, toggleTheme } = useTheme();
-  const { actions, toggleAction } = useActions(testDate);
-  const timer = useTimer(25);
+  const { actions, toggleAction, addAction, deleteAction, refresh: refreshActions } = useActions(testDate);
 
   const handleSelectEntry = (date: string) => {
     setSelectedEntryDate(date);
@@ -110,24 +115,33 @@ function App() {
                     session={session}
                     actions={actions}
                     onToggleAction={toggleAction}
+                    onAddAction={addAction}
+                    onDeleteAction={deleteAction}
                   />
                 </div>
               </div>
 
               <div className="bottom-nav">
                 <div className="bottom-nav-left">
-                  <span className="bottom-nav-item" onClick={() => setHistoryOpen(true)}>
-                    History
-                  </span>
+                  <button
+                    className="bottom-nav-btn"
+                    onClick={() => setHistoryOpen(true)}
+                    title="History"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v5h5" /><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" /></svg>
+                  </button>
+                  <button
+                    className="bottom-nav-btn"
+                    onClick={() => setView('settings')}
+                    title="Settings"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12.22 2h-.44a2 2 0 0 1-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 0 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
                 </div>
                 <div className="bottom-nav-right">
-                  <span
-                    className={`timer ${timer.isRunning ? 'running' : ''}`}
-                    onClick={timer.toggle}
-                    title={timer.isRunning ? 'Click to pause' : 'Click to start'}
-                  >
-                    {timer.displayTime}
-                  </span>
                   <button className="theme-toggle" onClick={toggleTheme}>
                     {theme === 'light' ? '🌙' : '☀️'}
                   </button>
@@ -136,11 +150,18 @@ function App() {
             </>
           )}
 
+          {view === 'settings' && (
+            <Settings onBack={() => setView('dashboard')} />
+          )}
+
           {view === 'wizard' && (
             <Wizard
               session={session}
               onUpdateSession={updateSession}
-              onComplete={() => setView('dashboard')}
+              onComplete={() => {
+                refreshActions();
+                setView('dashboard');
+              }}
               onBack={() => setView('dashboard')}
             />
           )}

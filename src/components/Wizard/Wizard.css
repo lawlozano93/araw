@@ -5,11 +5,17 @@
 }
 
 /* Progress dots */
+/* Progress dots */
 .wizard-progress {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
     padding: 12px;
+    z-index: 100;
 }
 
 .wizard-step-dot {
@@ -204,11 +210,20 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .answer-prompt {
     text-align: center;
-    padding: 24px 40px 0;
+    padding: 0 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 60px;
+    /* Offset for footer */
 }
 
 .answer-prompt-text {
@@ -325,4 +340,120 @@
     border: none;
     border-radius: var(--radius);
     cursor: pointer;
+}
+
+.prompts-single-question {
+    font-size: 24px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--foreground);
+    max-width: 600px;
+    line-height: 1.4;
+    margin: 0 auto;
+}
+
+/* Timer styles in StreamStep */
+.wizard-step-footer {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 20;
+}
+
+.wizard-step-footer button {
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.wizard-step-footer button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.wizard-step-footer button:active {
+    transform: translateY(0);
+}
+
+.wizard-step-footer button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.stream-timer-container {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+    margin-bottom: -40px;
+    z-index: 10;
+    position: relative;
+}
+
+.stream-timer {
+    padding: 8px 16px;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    user-select: none;
+    color: var(--muted-foreground);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.stream-timer:hover {
+    border-color: var(--primary);
+    color: var(--foreground);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stream-timer.running {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--accent);
+}
+
+.stream-timer.empty {
+    border-style: dashed;
+}
+
+.timer-placeholder {
+    font-size: 13px;
+}
+
+.timer-display {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+
+.timer-clear {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+    opacity: 0.6;
+}
+
+.timer-clear:hover {
+    opacity: 1;
 }

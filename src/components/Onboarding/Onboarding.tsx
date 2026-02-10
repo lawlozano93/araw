@@ -31,11 +31,11 @@ export function Onboarding({ onComplete }: OnboardingProps) {
 
     const steps = [
         {
-            title: "Welcome to Frontal Lobe",
+            title: "Welcome to Araw",
             subtitle: "Your daily journaling companion for high performance.",
             content: (
                 <div className="onboarding-welcome">
-                    <p>Frontal Lobe helps you start your day with intention.</p>
+                    <p>Araw helps you start your day with intention.</p>
                     <ul className="feature-list">
                         <li>🎯 <strong>Review Goals</strong> to stay aligned.</li>
                         <li>🧠 <strong>Recite Affirmations</strong> to prime your mindset.</li>

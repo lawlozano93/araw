@@ -13,13 +13,13 @@
   --secondary-foreground: oklch(1.0000 0 0);
   --muted: oklch(0.9222 0.0013 286.3737);
   --muted-foreground: oklch(0.1884 0.0128 248.5103);
-  --accent: oklch(0.9392 0.0166 250.8453);
-  --accent-foreground: oklch(0.6723 0.1606 244.9955);
+  --accent: oklch(0.95 0.04 154.1862);
+  --accent-foreground: oklch(0.20 0.05 154.1862);
   --destructive: oklch(0.6188 0.2376 25.7658);
   --destructive-foreground: oklch(1.0000 0 0);
   --border: oklch(0.9317 0.0118 231.6594);
   --input: oklch(0.9809 0.0025 228.7836);
-  --ring: oklch(0.6818 0.1584 243.3540);
+  --ring: oklch(0.6912 0.0706 154.1862);
   --chart-1: oklch(0.6723 0.1606 244.9955);
   --chart-2: oklch(0.6907 0.1554 160.3454);
   --chart-3: oklch(0.8214 0.1600 82.5337);
@@ -62,19 +62,19 @@
   --card-foreground: oklch(0.8853 0 0);
   --popover: oklch(0 0 0);
   --popover-foreground: oklch(0.9328 0.0025 228.7857);
-  --primary: oklch(0.6692 0.1607 245.0110);
+  --primary: oklch(0.6912 0.0706 154.1862);
   --primary-foreground: oklch(1.0000 0 0);
   --secondary: oklch(0.9622 0.0035 219.5331);
   --secondary-foreground: oklch(0.1884 0.0128 248.5103);
   --muted: oklch(0.2090 0 0);
   --muted-foreground: oklch(0.5637 0.0078 247.9662);
-  --accent: oklch(0.1928 0.0331 242.5459);
-  --accent-foreground: oklch(0.6692 0.1607 245.0110);
+  --accent: oklch(0.25 0.05 154.1862);
+  --accent-foreground: oklch(0.6912 0.0706 154.1862);
   --destructive: oklch(0.6188 0.2376 25.7658);
   --destructive-foreground: oklch(1.0000 0 0);
   --border: oklch(0.2674 0.0047 248.0045);
   --input: oklch(0.3020 0.0288 244.8244);
-  --ring: oklch(0.6818 0.1584 243.3540);
+  --ring: oklch(0.6912 0.0706 154.1862);
   --chart-1: oklch(0.6723 0.1606 244.9955);
   --chart-2: oklch(0.6907 0.1554 160.3454);
   --chart-3: oklch(0.8214 0.1600 82.5337);
@@ -82,10 +82,10 @@
   --chart-5: oklch(0.5919 0.2186 10.5826);
   --sidebar: oklch(0.2097 0.0080 274.5332);
   --sidebar-foreground: oklch(0.8853 0 0);
-  --sidebar-primary: oklch(0.6818 0.1584 243.3540);
+  --sidebar-primary: oklch(0.6912 0.0706 154.1862);
   --sidebar-primary-foreground: oklch(1.0000 0 0);
-  --sidebar-accent: oklch(0.1928 0.0331 242.5459);
-  --sidebar-accent-foreground: oklch(0.6692 0.1607 245.0110);
+  --sidebar-accent: oklch(0.25 0.05 154.1862);
+  --sidebar-accent-foreground: oklch(0.6912 0.0706 154.1862);
   --sidebar-border: oklch(0.3795 0.0220 240.5943);
   --sidebar-ring: oklch(0.6818 0.1584 243.3540);
   --font-sans: Chocolate Classical Sans, ui-sans-serif, sans-serif, system-ui;
@@ -111,6 +111,19 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+* {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 html,
@@ -188,29 +201,24 @@ body,
   background: #28c940;
 }
 
-/* Editor area */
-.editor-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding: 60px 40px 0;
-  overflow-y: auto;
-}
-
-.editor {
-  width: 100%;
-  max-width: 650px;
-}
-
 /* Bottom nav */
 .bottom-nav {
-  height: 36px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  /* Slightly taller to give space */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 24px;
   font-size: 12px;
   color: var(--muted-foreground);
+  z-index: 50;
+  /* Ensure on top */
+  pointer-events: none;
+  /* Let clicks pass through empty areas if needed, but buttons need events */
 }
 
 .bottom-nav-left,
@@ -218,55 +226,88 @@ body,
   display: flex;
   align-items: center;
   gap: 16px;
+  pointer-events: auto;
+  /* Re-enable clicks for buttons */
 }
 
-.bottom-nav-item {
-  cursor: pointer;
-  transition: color 0.15s;
+/* Editor area */
+.editor-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  /* Fluid padding: min 20px, max 60px based on viewport height */
+  /* Added bottom padding to accommodate absolute footer */
+  padding: clamp(20px, 6vh, 60px) clamp(20px, 4vw, 40px) 48px;
+  overflow-y: auto;
 }
 
-.bottom-nav-item:hover {
-  color: var(--foreground);
-}
-
-.timer {
-  cursor: pointer;
-  font-variant-numeric: tabular-nums;
-  transition: color 0.15s;
-}
-
-.timer:hover {
-  color: var(--foreground);
-}
-
-.timer.running {
-  color: var(--primary);
-}
-
-.theme-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  color: var(--muted-foreground);
+.editor {
+  width: 100%;
+  max-width: 650px;
+  /* Ensure it doesn't overflow horizontally */
+  min-width: 0;
 }
 
 /* Dashboard */
 .dashboard {
-  padding-top: 40px;
+  /* Fluid top padding */
+  padding-top: clamp(10px, 4vh, 40px);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dashboard-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: clamp(10px, 3vh, 32px);
 }
 
 .dashboard-greeting {
-  font-size: 32px;
+  /* Fluid font size: min 20px, max 32px - More aggressive scaling */
+  font-size: clamp(20px, 4vh, 32px);
   font-weight: 300;
   color: var(--foreground);
-  margin-bottom: 8px;
+  margin-bottom: clamp(2px, 0.5vh, 8px);
+}
+
+.session-complete-indicator {
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.stream-section {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.stream-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted-foreground);
+  margin-bottom: 12px;
+}
+
+.stream-content {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--foreground);
+  opacity: 0.9;
+  white-space: pre-wrap;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .dashboard-date {
   font-size: 14px;
   color: var(--muted-foreground);
-  margin-bottom: 48px;
+  /* Fluid margin bottom */
+  margin-bottom: clamp(20px, 5vh, 48px);
 }
 
 .session-prompt {
@@ -292,26 +333,84 @@ body,
   opacity: 0.9;
 }
 
+/* Main Goal Section Responsive Styles */
+.main-goal-section {
+  /* Fluid margins */
+  margin-top: clamp(16px, 4vh, 32px);
+  margin-bottom: clamp(20px, 5vh, 40px);
+  flex-shrink: 0;
+  /* Prevent crushing if possible, or allow if needed */
+}
+
+.current-prompt-text {
+  /* Fluid font size */
+  font-size: clamp(15px, 2.5vh, 18px);
+  font-weight: 600;
+  margin-bottom: clamp(10px, 2vh, 20px);
+  color: var(--foreground);
+  line-height: 1.4;
+}
+
+.main-goal-item {
+  padding: clamp(10px, 2vh, 16px);
+  background: var(--accent);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.main-goal-item .action-text {
+  font-size: clamp(15px, 2.5vh, 18px);
+  font-weight: 500;
+}
+
+.awaiting-answer {
+  padding: clamp(10px, 2vh, 16px);
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
 /* Actions list */
 .actions-section {
-  margin-top: 64px;
+  /* Remove fixed large margin, let flex gap or smaller margin handle it */
+  margin-top: 0;
+  flex: 1;
+  /* Allow this section to take remaining space */
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* Important for scroll container inside flex */
 }
 
 .actions-header {
   font-size: 11px;
+  /* Keep small */
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--muted-foreground);
-  margin-bottom: 16px;
+  margin-bottom: 2px;
+  /* Reduced per user request */
+  padding-bottom: 0;
+}
+
+.actions-list {
+  overflow-y: auto;
+  /* flex: 1; Removed per user request to keep input attached */
+  /* min-height: 0; Removed */
+  padding-bottom: 0;
 }
 
 .action-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
+  padding: clamp(4px, 1vh, 8px) 0;
+  /* Fluid padding */
+  border-bottom: none;
   cursor: pointer;
 }
 
@@ -319,9 +418,27 @@ body,
   background: transparent;
 }
 
-.action-item:first-child {
-  border-top: 1px solid var(--border);
+.delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  padding: 4px;
+  border-radius: 4px;
 }
+
+.delete-btn:hover {
+  background: color-mix(in srgb, var(--destructive), transparent 90%);
+  color: var(--destructive);
+}
+
+.action-item:hover .delete-btn {
+  opacity: 1;
+}
+
+
 
 .action-checkbox {
   width: 18px;
@@ -341,7 +458,8 @@ body,
 }
 
 .action-text {
-  font-size: 15px;
+  font-size: clamp(13px, 2vh, 15px);
+  /* Fluid font size */
   color: var(--foreground);
   flex: 1;
 }
@@ -389,12 +507,128 @@ body,
 
 .entry-preview-content {
   font-size: 15px;
-  line-height: 1.7;
-  color: var(--foreground);
-  white-space: pre-wrap;
-  max-height: 150px;
-  overflow-y: auto;
 }
+
+/* Settings Page */
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: clamp(10px, 4vh, 20px);
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.settings-header h2 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 0;
+}
+
+.settings-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 500;
+}
+
+.settings-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-bottom: 16px;
+}
+
+.settings-textarea {
+  flex: 1;
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: none;
+  color: var(--foreground);
+  line-height: 1.6;
+}
+
+.settings-textarea:focus {
+  outline: 2px solid var(--primary);
+  border-color: transparent;
+}
+
+.settings-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.save-btn {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  padding: 8px 24px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.bottom-nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted-foreground);
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.bottom-nav-btn:hover {
+  color: var(--foreground);
+}
+
 
 .entry-preview-prompt {
   font-size: 14px;

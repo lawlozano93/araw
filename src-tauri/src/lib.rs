@@ -26,7 +26,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             // Create tray menu
-            let show = MenuItem::with_id(app, "show", "Open Frontal Lobe", true, None::<&str>)?;
+            let show = MenuItem::with_id(app, "show", "Open Araw", true, None::<&str>)?;
             let start_session = MenuItem::with_id(app, "start_session", "Start Session", true, None::<&str>)?;
             let separator = MenuItem::with_id(app, "sep", "─────────────", false, None::<&str>)?;
             let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;

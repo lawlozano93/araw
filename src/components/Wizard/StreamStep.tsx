@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTimer } from '../../hooks/useTimer';
 
 interface StreamStepProps {
     value: string;
@@ -19,8 +20,40 @@ export function StreamStep({ value, onChange, onDone }: StreamStepProps) {
         PLACEHOLDERS[Math.floor(Math.random() * PLACEHOLDERS.length)]
     );
 
+    // Timer logic
+    const timer = useTimer(0);
+    const autoStartTimeoutRef = useRef<number | null>(null);
+
+    const handleAddFormattedTime = () => {
+        // Add 5 minutes
+        timer.addTime(5);
+
+        // Reset auto-start timeout
+        if (autoStartTimeoutRef.current) {
+            clearTimeout(autoStartTimeoutRef.current);
+        }
+
+        // Auto-start after 2 seconds of inactivity
+        autoStartTimeoutRef.current = window.setTimeout(() => {
+            if (!timer.isRunning) {
+                timer.start();
+            }
+        }, 2000);
+    };
+
+    const handleClearTimer = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (autoStartTimeoutRef.current) {
+            clearTimeout(autoStartTimeoutRef.current);
+        }
+        timer.reset();
+    };
+
     useEffect(() => {
         textareaRef.current?.focus();
+        return () => {
+            if (autoStartTimeoutRef.current) clearTimeout(autoStartTimeoutRef.current);
+        };
     }, []);
 
     return (
@@ -34,9 +67,22 @@ export function StreamStep({ value, onChange, onDone }: StreamStepProps) {
                     placeholder={placeholder}
                 />
             </div>
-            <div className="stream-footer">
+            <div className="wizard-step-footer">
+                <div
+                    className={`stream-timer ${timer.isRunning ? 'running' : ''} ${timer.displayTime === '00:00' ? 'empty' : ''}`}
+                    onClick={handleAddFormattedTime}
+                    title="Click to add 5 minutes"
+                >
+                    {timer.displayTime === '00:00' ? (
+                        <span className="timer-placeholder">+ Add time</span>
+                    ) : (
+                        <>
+                            <span className="timer-display">{timer.displayTime}</span>
+                            <button className="timer-clear" onClick={handleClearTimer} title="Clear timer">×</button>
+                        </>
+                    )}
+                </div>
                 <button
-                    className="btn btn-primary"
                     onClick={onDone}
                     disabled={!value.trim()}
                 >

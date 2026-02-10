@@ -1,4 +1,4 @@
-// Type definitions for Frontal Lobe
+// Type definitions for Araw
 
 export interface DailySession {
   id: string;
@@ -25,6 +25,7 @@ export interface ActionItem {
   id: string;
   text: string;
   done: boolean;
+  isMain?: boolean;
   createdAt: string;
   completedAt?: string;
 }

@@ -59,6 +59,10 @@ export function useTimer(initialMinutes: number = 25) {
         }
     }, [state, start, pause]);
 
+    const addTime = useCallback((minutes: number) => {
+        setTotalSeconds(prev => prev + (minutes * 60));
+    }, []);
+
     const remainingSeconds = totalSeconds - elapsedSeconds;
     const minutes = Math.floor(remainingSeconds / 60);
     const seconds = remainingSeconds % 60;
@@ -75,6 +79,7 @@ export function useTimer(initialMinutes: number = 25) {
         pause,
         reset,
         toggle,
+        addTime,
         isRunning: state === 'running',
     };
 }

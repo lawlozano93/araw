@@ -160,12 +160,13 @@ function parseEntryMarkdown(content: string, date: string): JournalEntry {
         } else if (section.startsWith('Actions')) {
             const lines = section.split('\n').slice(1);
             for (const line of lines) {
-                const match = line.match(/^- \[([ x])\] (.+)$/);
+                const match = line.match(/^- \[([ x])\] (.+?)( <!-- MAIN -->)?\s*$/);
                 if (match) {
                     actions.push({
                         id: crypto.randomUUID(),
                         text: match[2],
                         done: match[1] === 'x',
+                        isMain: !!match[3],
                         createdAt: date,
                     });
                 }
@@ -203,7 +204,8 @@ function formatEntryMarkdown(entry: JournalEntry): string {
     if (entry.actions.length > 0) {
         md += `## Actions\n`;
         for (const action of entry.actions) {
-            md += `- [${action.done ? 'x' : ' '}] ${action.text}\n`;
+            const mainMarker = action.isMain ? ' <!-- MAIN -->' : '';
+            md += `- [${action.done ? 'x' : ' '}] ${action.text}${mainMarker}\n`;
         }
     }
 

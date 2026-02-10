@@ -2,10 +2,10 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 
-/// Get the FrontalLobe data directory
+/// Get the Araw data directory
 fn get_data_dir() -> PathBuf {
     let home = dirs::home_dir().expect("Could not find home directory");
-    home.join("Documents").join("FrontalLobe")
+    home.join("Documents").join("Araw")
 }
 
 /// Ensure all required directories exist

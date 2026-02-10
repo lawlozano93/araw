@@ -1,3 +1,4 @@
+
 interface ReadingStepProps {
     title: string;
     content: string;
@@ -15,9 +16,11 @@ export function ReadingStep({ title, content, onDone }: ReadingStepProps) {
             <div className="reading-content">
                 {cleanContent}
             </div>
-            <button className="btn btn-primary reading-done" onClick={onDone}>
-                Done Reading
-            </button>
+            <div className="wizard-step-footer">
+                <button onClick={onDone}>
+                    Done Reading
+                </button>
+            </div>
         </div>
     );
 }

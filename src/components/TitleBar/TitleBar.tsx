@@ -5,7 +5,7 @@ interface TitleBarProps {
     title?: string;
 }
 
-export function TitleBar({ title = 'Frontal Lobe' }: TitleBarProps) {
+export function TitleBar({ title = 'Araw' }: TitleBarProps) {
     const appWindow = getCurrentWindow();
 
     const handleMinimize = () => appWindow.minimize();

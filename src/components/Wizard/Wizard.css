@@ -262,8 +262,8 @@
 }
 
 .answer-actions-header {
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--muted-foreground);
@@ -343,8 +343,8 @@
 }
 
 .prompts-single-question {
-    font-size: 24px;
-    font-weight: 500;
+    font-size: 26px;
+    font-weight: 400;
     text-align: center;
     color: var(--foreground);
     max-width: 600px;
@@ -366,7 +366,7 @@
 .wizard-step-footer button {
     padding: 10px 24px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 400;
     background: var(--primary);
     color: var(--primary-foreground);
     border: none;
@@ -407,7 +407,7 @@
     border: 1px solid var(--border);
     border-radius: 20px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 400;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -440,7 +440,7 @@
 
 .timer-display {
     font-variant-numeric: tabular-nums;
-    font-weight: 600;
+    font-weight: 400;
 }
 
 .timer-clear {

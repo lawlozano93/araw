@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { loadPage, savePage } from '../../hooks/useStorage';
+import { VaultSettings } from './VaultSettings';
+import { SmartTextarea } from '../SmartTextarea';
 
 interface SettingsProps {
     onBack: () => void;
 }
 
-type Tab = 'goals' | 'affirmations' | 'visualizations';
+type Tab = 'goals' | 'affirmations' | 'visualizations' | 'vault';
+type ContentTab = Exclude<Tab, 'vault'>;
 
 export function Settings({ onBack }: SettingsProps) {
     const [activeTab, setActiveTab] = useState<Tab>('goals');
@@ -14,10 +18,12 @@ export function Settings({ onBack }: SettingsProps) {
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        loadContent(activeTab);
+        if (activeTab !== 'vault') {
+            loadContent(activeTab);
+        }
     }, [activeTab]);
 
-    const loadContent = async (type: Tab) => {
+    const loadContent = async (type: ContentTab) => {
         setLoading(true);
         try {
             const data = await loadPage(type);
@@ -29,10 +35,10 @@ export function Settings({ onBack }: SettingsProps) {
     };
 
     const handleSave = async () => {
+        if (activeTab === 'vault') return;
         setSaving(true);
         try {
             await savePage(activeTab, content);
-            // Optional: Show success toast
         } catch (error) {
             console.error('Failed to save content', error);
         }
@@ -43,7 +49,7 @@ export function Settings({ onBack }: SettingsProps) {
         <div className="settings-container">
             <div className="settings-header">
                 <button className="back-btn" onClick={onBack}>
-                    ← Back
+                    <ArrowLeft size={16} /> Back
                 </button>
                 <h2>Settings</h2>
                 <div style={{ width: '60px' }}></div> {/* Spacer for alignment */}
@@ -68,13 +74,21 @@ export function Settings({ onBack }: SettingsProps) {
                 >
                     Visualization
                 </button>
+                <button
+                    className={`tab-btn ${activeTab === 'vault' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('vault')}
+                >
+                    Vault
+                </button>
             </div>
 
             <div className="settings-content">
-                {loading ? (
+                {activeTab === 'vault' ? (
+                    <VaultSettings />
+                ) : loading ? (
                     <div className="loading-spinner">Loading...</div>
                 ) : (
-                    <textarea
+                    <SmartTextarea
                         className="settings-textarea"
                         value={content}
                         onChange={(e) => setContent(e.target.value)}

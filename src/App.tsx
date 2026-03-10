@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { History, Settings as SettingsIcon, Moon, Sun, ZoomIn, ZoomOut } from 'lucide-react';
 import { TitleBar } from './components/TitleBar/TitleBar';
 import { Dashboard } from './components/Dashboard/Dashboard';
 import { Wizard } from './components/Wizard/Wizard';
@@ -17,18 +18,32 @@ function App() {
   const [view, setView] = useState<View>('dashboard');
   const [historyOpen, setHistoryOpen] = useState(false);
   const [selectedEntryDate, setSelectedEntryDate] = useState<string | null>(null);
-  // TEST MODE: Allow selecting different dates for testing
-  const [testDate, setTestDate] = useState(() => {
-    return localStorage.getItem('testDate') || new Date().toISOString().split('T')[0];
-  });
+  const [zoomLevel, setZoomLevel] = useState(1);
+
+  // TEST MODE: Removed test date selector
 
   useEffect(() => {
-    localStorage.setItem('testDate', testDate);
-  }, [testDate]);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === '=' || e.key === '+') {
+          e.preventDefault();
+          setZoomLevel((prev) => Math.min(prev + 0.1, 2.0));
+        } else if (e.key === '-') {
+          e.preventDefault();
+          setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));
+        } else if (e.key === '0') {
+          e.preventDefault();
+          setZoomLevel(1);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
-  const { session, loading, updateSession, onboardingComplete, completeOnboarding } = useSession(testDate); // Pass testDate
+  const { session, loading, updateSession, onboardingComplete, completeOnboarding } = useSession();
   const { theme, toggleTheme } = useTheme();
-  const { actions, toggleAction, addAction, deleteAction, refresh: refreshActions } = useActions(testDate);
+  const { actions, toggleAction, addAction, deleteAction, refresh: refreshActions } = useActions();
 
   const handleSelectEntry = (date: string) => {
     setSelectedEntryDate(date);
@@ -43,14 +58,12 @@ function App() {
 
   // If in tray window, render TrayApp
   if (windowLabel === 'tray') {
-    return (
-      <TrayApp />
-    );
+    return <TrayApp />;
   }
 
   if (loading || !session) {
     return (
-      <div className="app-container">
+      <div className="app-container" style={{ zoom: zoomLevel }}>
         <TitleBar />
         <div className="loading">Loading...</div>
       </div>
@@ -59,7 +72,7 @@ function App() {
 
   if (!onboardingComplete) {
     return (
-      <div className="app-container">
+      <div className="app-container" style={{ zoom: zoomLevel }}>
         <TitleBar />
         <div className="app-main">
           <Onboarding onComplete={completeOnboarding} />
@@ -69,7 +82,7 @@ function App() {
   }
 
   return (
-    <div className="app-container">
+    <div className="app-container" style={{ zoom: zoomLevel }}>
       <TitleBar />
 
       {/* History Sidebar */}
@@ -90,28 +103,8 @@ function App() {
             <>
               <div className="editor-container">
                 <div className="editor">
-                  {/* TEST MODE: Date selector */}
-                  <div className="test-date-picker">
-                    <label>
-                      <span style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginRight: '8px' }}>TEST DATE:</span>
-                      <input
-                        type="date"
-                        value={testDate}
-                        onChange={(e) => setTestDate(e.target.value)}
-                        style={{
-                          background: 'var(--input)',
-                          border: '1px solid var(--border)',
-                          borderRadius: 'var(--radius)',
-                          padding: '4px 8px',
-                          fontSize: '12px',
-                          color: 'var(--foreground)'
-                        }}
-                      />
-                    </label>
-                  </div>
                   <Dashboard
                     onStartSession={() => setView('wizard')}
-                    testDate={testDate}
                     session={session}
                     actions={actions}
                     onToggleAction={toggleAction}
@@ -128,22 +121,35 @@ function App() {
                     onClick={() => setHistoryOpen(true)}
                     title="History"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v5h5" /><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" /></svg>
+                    <History size={16} />
                   </button>
                   <button
                     className="bottom-nav-btn"
                     onClick={() => setView('settings')}
                     title="Settings"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12.22 2h-.44a2 2 0 0 1-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 0 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
+                    <SettingsIcon size={16} />
                   </button>
                 </div>
                 <div className="bottom-nav-right">
+                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                    <button
+                      className="bottom-nav-btn"
+                      onClick={() => setZoomLevel((z) => Math.max(z - 0.1, 0.5))}
+                      title="Zoom Out"
+                    >
+                      <ZoomOut size={16} />
+                    </button>
+                    <button
+                      className="bottom-nav-btn"
+                      onClick={() => setZoomLevel((z) => Math.min(z + 0.1, 2.0))}
+                      title="Zoom In"
+                    >
+                      <ZoomIn size={16} />
+                    </button>
+                  </div>
                   <button className="theme-toggle" onClick={toggleTheme}>
-                    {theme === 'light' ? '🌙' : '☀️'}
+                    {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
                   </button>
                 </div>
               </div>

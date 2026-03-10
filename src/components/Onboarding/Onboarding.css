@@ -2,160 +2,272 @@
     height: 100vh;
     width: 100%;
     overflow: hidden;
-    /* Prevent scrolling */
     display: flex;
     flex-direction: column;
     background: var(--background);
-    padding: 40px;
-    /* Consistent padding */
+    padding: 48px 40px 80px;
+    /* bottom padding leaves space for fixed footer + dots */
 }
 
 .onboarding-card {
-    /* Take up full available height to distribute space */
     flex: 1;
     width: 100%;
-    max-width: 800px;
+    max-width: 620px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    /* Use justify-content to space out header, content, footer */
-    justify-content: space-between;
+    gap: 28px;
+    overflow: hidden;
+}
+
+/* ---- Step layouts ---- */
+.onboarding-step {
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    /* Reduced gap from 40px */
+    height: 100%;
+    overflow: hidden;
 }
 
-.onboarding-header {
-    text-align: left;
-    max-width: 600px;
-    width: 100%;
-    margin: 0 auto;
-    flex-shrink: 0;
-    /* Header shouldn't shrink */
-}
-
+/* ---- Header ---- */
 .onboarding-header h1 {
-    font-size: 32px;
-    font-weight: 600;
-    margin-bottom: 12px;
+    font-size: 30px;
+    font-weight: 400;
     color: var(--foreground);
+    margin-bottom: 12px;
     letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.onboarding-logo {
+    font-family: 'Patrick Hand', cursive;
+    font-size: 52px;
+    font-weight: 400;
+    letter-spacing: 4px;
+    text-transform: lowercase;
 }
 
 .onboarding-header p {
     color: var(--muted-foreground);
-    font-size: 18px;
-    line-height: 1.5;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 8px;
 }
 
-.onboarding-progress {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.progress-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--muted);
-    transition: all 0.3s ease;
-}
-
-.progress-dot.active {
-    background: var(--foreground);
-    transform: scale(1.2);
-}
-
-.onboarding-content {
-    /* This makes the content area flexible to fill remaining space */
-    flex: 1;
+/* ---- Body text ---- */
+.onboarding-body {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-    min-height: 0;
-    /* Crucial for nested flex scrolling/sizing */
-    justify-content: center;
-    /* Center content vertically if it's small */
+    gap: 16px;
 }
 
-.onboarding-welcome {
-    font-size: 18px;
+.onboarding-body p {
+    font-size: 16px;
     line-height: 1.6;
-    color: var(--foreground);
+    color: var(--muted-foreground);
 }
 
-.feature-list {
+/* ---- Bullet lists ---- */
+.onboarding-list {
     list-style: none;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    margin-top: 32px;
+    gap: 14px;
+    margin-top: 4px;
 }
 
-.feature-list li {
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    color: var(--muted-foreground);
-}
-
-.feature-list li strong {
+.onboarding-list li {
+    font-size: 15px;
+    line-height: 1.5;
     color: var(--foreground);
-    font-weight: 600;
+    padding-left: 20px;
+    position: relative;
+}
+
+.onboarding-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    font-weight: 400;
+}
+
+.list-hint {
+    color: var(--muted-foreground);
+    font-style: italic;
+}
+
+/* ---- Textarea field ---- */
+.onboarding-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
 }
 
 .onboarding-textarea {
+    flex: 1;
     width: 100%;
-    height: 100%;
-    /* Fill the flexible content area */
     background: transparent;
     color: var(--foreground);
     border: none;
-    padding: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 0 0 8px 0;
     font-family: inherit;
-    font-size: 24px;
-    /* Larger font size as requested/implied by "cleaner" */
+    font-size: 20px;
     resize: none;
-    line-height: 1.5;
+    line-height: 1.6;
     outline: none;
+    transition: border-color 0.2s;
+    caret-color: var(--primary);
+    min-height: 120px;
+}
+
+.onboarding-textarea:focus {
+    border-bottom-color: var(--primary);
 }
 
 .onboarding-textarea::placeholder {
-    color: var(--muted);
-    opacity: 0.5;
+    color: var(--muted-foreground);
+    opacity: 0.4;
 }
 
-.onboarding-footer {
+/* ---- Helper text & tooltip ---- */
+.field-helper {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    line-height: 1.5;
     display: flex;
-    justify-content: flex-end;
-    max-width: 600px;
-    width: 100%;
-    margin: 0 auto;
-    flex-shrink: 0;
-    /* Footer shouldn't shrink */
-    padding-top: 20px;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: baseline;
+}
+
+.tooltip-toggle {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: var(--primary);
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    white-space: nowrap;
+}
+
+.tooltip-box {
+    background: var(--muted);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tooltip-box p {
+    font-size: 13px;
+    color: var(--muted-foreground);
+    line-height: 1.5;
+    font-style: italic;
+    margin: 0;
+}
+
+/* ---- Summary screen ---- */
+.onboarding-summary .onboarding-list li {
+    font-size: 16px;
+}
+
+.onboarding-list--numbered {
+    counter-reset: item;
+}
+
+.onboarding-list--numbered li {
+    counter-increment: item;
+    padding-left: 28px;
+}
+
+.onboarding-list--numbered li::before {
+    content: counter(item) '.';
+    font-style: normal;
+    font-weight: 400;
+    color: var(--primary);
+}
+
+/* ---- Progress dots — fixed bottom center ---- */
+.onboarding-dots {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    z-index: 10;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--muted-foreground);
+    opacity: 0.3;
+    transition: all 0.25s ease;
+}
+
+.dot.active {
+    background: var(--foreground);
+    opacity: 1;
+    width: 20px;
+    border-radius: 3px;
+}
+
+.dot.done {
+    background: var(--primary);
+    opacity: 0.6;
+}
+
+/* ---- Footer buttons — fixed bottom right ---- */
+.onboarding-footer {
+    position: fixed;
+    bottom: 20px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10;
+}
+
+.btn-back {
+    background: transparent;
+    color: var(--muted-foreground);
+    border: 1px solid var(--border);
+    padding: 10px 24px;
+    border-radius: 24px;
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+    color: var(--foreground);
+    border-color: var(--foreground);
 }
 
 .btn-primary {
-    background: transparent;
-    color: var(--foreground);
-    border: 1px solid var(--border);
-    padding: 12px 32px;
+    background: var(--primary);
+    color: #fff;
+    border: 1px solid transparent;
+    padding: 10px 28px;
     border-radius: 24px;
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 400;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
-    background: var(--foreground);
-    color: var(--background);
-    border-color: var(--foreground);
+    opacity: 0.85;
 }

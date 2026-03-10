@@ -1,0 +1,37 @@
+{
+  "fill" : {
+    "automatic-gradient" : "srgb:0.96570,0.99553,1.00000,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "glass" : true,
+          "image-name" : "appstore.png",
+          "name" : "appstore",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              0,
+              1.1368683772161603e-13
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}

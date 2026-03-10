@@ -51,4 +51,5 @@ export interface AppConfig {
   lastSessionDate: string;
   sessions: Record<string, DailySession>;
   onboardingComplete: boolean;
+  vaultPath?: string; // Custom data directory (default: ~/Documents/Araw)
 }

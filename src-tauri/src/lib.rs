@@ -1,6 +1,6 @@
 mod storage;
 
-use storage::{read_file, write_file, list_files, delete_file, get_data_path};
+use storage::{read_file, write_file, list_files, delete_file, get_data_path, set_vault_path, get_vault_path};
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -110,7 +110,9 @@ pub fn run() {
             write_file,
             list_files,
             delete_file,
-            get_data_path
+            get_data_path,
+            set_vault_path,
+            get_vault_path
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

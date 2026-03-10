@@ -20,7 +20,7 @@ body,
     display: flex;
     flex-direction: column;
     box-shadow: var(--shadow-lg);
-    font-family: var(--font-sans);
+    font-family: 'Patrick Hand', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .tray-container *:focus-visible {
@@ -38,14 +38,14 @@ body,
 }
 
 .tray-date {
-    font-weight: 600;
-    font-size: 15px;
+    font-weight: 400;
+    font-size: 16px;
     letter-spacing: -0.3px;
 }
 
 .tray-streak {
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 400;
     color: var(--primary);
     background: color-mix(in srgb, var(--primary), transparent 90%);
     padding: 4px 8px;
@@ -98,8 +98,8 @@ body,
 }
 
 .cta-title {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 400;
     color: var(--foreground);
     margin-bottom: 2px;
 }
@@ -112,8 +112,8 @@ body,
 .session-complete-banner {
     text-align: center;
     color: var(--primary);
-    font-weight: 600;
-    font-size: 14px;
+    font-weight: 400;
+    font-size: 15px;
     padding: 12px;
     background: var(--card);
     border: 1px solid var(--border);
@@ -121,10 +121,11 @@ body,
 }
 
 /* Sections */
-.tray-section {
+.tray-container .tray-section {
     display: flex;
     flex-direction: column;
     margin-bottom: 16px;
+    margin-top: 0;
 }
 
 .section-header {
@@ -143,8 +144,8 @@ body,
 }
 
 .section-title {
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.8px;
     color: var(--muted-foreground);
@@ -153,7 +154,7 @@ body,
 .section-meta {
     font-size: 11px;
     color: var(--muted-foreground);
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .section-content {
@@ -165,8 +166,8 @@ body,
 }
 
 /* Items */
-.input-item,
-.action-item {
+.tray-container .input-item,
+.tray-container .action-item {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -176,19 +177,19 @@ body,
     border-bottom: 1px solid var(--border);
 }
 
-.input-item:last-child,
-.action-item:last-child {
+.tray-container .input-item:last-child,
+.tray-container .action-item:last-child {
     border-bottom: none;
 }
 
-.input-item:hover,
-.action-item:hover {
+.tray-container .input-item:hover,
+.tray-container .action-item:hover {
     background: var(--accent);
     color: var(--accent-foreground);
 }
 
-.input-checkbox,
-.action-checkbox {
+.tray-container .input-checkbox,
+.tray-container .action-checkbox {
     width: 18px;
     height: 18px;
     border: 1.5px solid var(--muted-foreground);
@@ -202,27 +203,27 @@ body,
 }
 
 /* Checked State */
-.input-item:hover .input-checkbox,
-.action-item:hover .action-checkbox {
+.tray-container .input-item:hover .input-checkbox,
+.tray-container .action-item:hover .action-checkbox {
     border-color: var(--primary);
 }
 
-.input-item.done .input-checkbox,
-.action-item.done .action-checkbox {
+.tray-container .input-item.done .input-checkbox,
+.tray-container .action-item.done .action-checkbox {
     background: var(--primary);
     border-color: var(--primary);
     color: var(--primary-foreground);
 }
 
-.input-label,
-.action-text {
+.tray-container .input-label,
+.tray-container .action-text {
     font-size: 13px;
     color: var(--foreground);
     flex: 1;
-    font-weight: 500;
+    font-weight: 400;
 }
 
-.action-item.done .action-text {
+.tray-container .action-item.done .action-text {
     text-decoration: line-through;
     color: var(--muted-foreground);
 }
@@ -265,7 +266,7 @@ body,
     background: color-mix(in srgb, var(--muted), transparent 50%);
     padding: 2px 5px;
     border-radius: 4px;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 /* Footer */
@@ -273,7 +274,7 @@ body,
     margin-top: auto;
     padding: 8px 12px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     border: 1px solid var(--border);
     background: var(--card);
     border-radius: var(--radius);
@@ -285,12 +286,24 @@ body,
     font-size: 11px;
     color: var(--muted-foreground);
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 400;
     transition: color 0.15s;
+    font-family: 'Patrick Hand', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .footer-btn:hover {
     color: var(--foreground);
+}
+
+.footer-shortcut {
+    font-size: 10px;
+    color: var(--muted-foreground);
+    background: color-mix(in srgb, var(--muted), transparent 50%);
+    padding: 1px 4px;
+    border-radius: 4px;
 }
 
 /* Input Details Expansion */

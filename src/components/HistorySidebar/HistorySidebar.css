@@ -63,8 +63,8 @@
 }
 
 .calendar-nav span {
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 400;
     color: var(--sidebar-foreground);
 }
 

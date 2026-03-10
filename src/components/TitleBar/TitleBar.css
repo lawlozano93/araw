@@ -12,9 +12,17 @@
 
 .titlebar-title {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text-secondary);
   pointer-events: none;
+}
+
+.titlebar-logo {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 3px;
+  text-transform: lowercase;
 }
 
 .titlebar-buttons {

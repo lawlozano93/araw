@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { loadEntry } from '../../hooks/useStorage';
+import { Trash2 } from 'lucide-react';
+import { loadEntry, getToday } from '../../hooks/useStorage';
 import type { JournalEntry, ActionItem } from '../../types/models';
 
 interface DashboardProps {
     onStartSession: () => void;
-    testDate: string;
     session: {
         readGoals: boolean;
         readAffirmations: boolean;
@@ -19,7 +19,7 @@ interface DashboardProps {
     onDeleteAction?: (id: string) => void;
 }
 
-export function Dashboard({ onStartSession, testDate, session, actions, onToggleAction, onAddAction, onDeleteAction }: DashboardProps) {
+export function Dashboard({ onStartSession, session, actions, onToggleAction, onAddAction, onDeleteAction }: DashboardProps) {
     const [entry, setEntry] = useState<JournalEntry | null>(null);
 
     const greeting = () => {
@@ -29,7 +29,7 @@ export function Dashboard({ onStartSession, testDate, session, actions, onToggle
         return 'Good evening';
     };
 
-    const displayDate = new Date(testDate + 'T12:00:00').toLocaleDateString('en-US', {
+    const displayDate = new Date().toLocaleDateString('en-US', {
         weekday: 'long',
         month: 'long',
         day: 'numeric'
@@ -48,9 +48,9 @@ export function Dashboard({ onStartSession, testDate, session, actions, onToggle
     // Load entry content when complete
     useEffect(() => {
         if (isComplete) {
-            loadEntry(testDate).then(setEntry).catch(() => setEntry(null));
+            loadEntry(getToday()).then(setEntry).catch(() => setEntry(null));
         }
-    }, [isComplete, testDate]);
+    }, [isComplete]);
 
     const mainAction = actions?.find(a => a.isMain);
     const otherActions = actions?.filter(a => !a.isMain) || [];
@@ -153,10 +153,7 @@ export function Dashboard({ onStartSession, testDate, session, actions, onToggle
                                             }}
                                             title="Delete task"
                                         >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <polyline points="3 6 5 6 21 6"></polyline>
-                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                            </svg>
+                                            <Trash2 size={14} />
                                         </div>
                                     )}
                                 </div>

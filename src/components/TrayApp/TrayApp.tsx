@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSession, useActions, useTheme } from '../../hooks/useSession';
-import { loadPage } from '../../hooks/useStorage';
+import { loadPage, loadConfig } from '../../hooks/useStorage';
 import { invoke } from '@tauri-apps/api/core';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 import './TrayApp.css';
 
 export function TrayApp() {
     const { session, completedSteps, isComplete, updateSession } = useSession();
     const { actions, addAction, toggleAction } = useActions();
-    const { theme } = useTheme(); // Sync theme
+    const { theme: _theme } = useTheme(); // Sync theme
 
     // State for expanded sections and items
     const [expandedSection, setExpandedSection] = useState<'inputs' | 'actions' | null>('inputs');
@@ -17,20 +18,31 @@ export function TrayApp() {
     const [goals, setGoals] = useState<string>('');
     const [affirmations, setAffirmations] = useState<string>('');
     const [visualizations, setVisualizations] = useState<string>('');
+    const [streak, setStreak] = useState<number>(0);
 
     const [newAction, setNewAction] = useState('');
     const actionInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        // Load content
-        loadPage('goals').then(setGoals).catch(() => { });
-        loadPage('affirmations').then(setAffirmations).catch(() => { });
-        loadPage('visualizations').then(setVisualizations).catch(() => { });
+        const loadContent = () => {
+            loadPage('goals').then(setGoals).catch(() => { });
+            loadPage('affirmations').then(setAffirmations).catch(() => { });
+            loadPage('visualizations').then(setVisualizations).catch(() => { });
+            loadConfig().then(config => setStreak(config.currentStreak)).catch(() => { });
+        };
+
+        // Load on mount
+        loadContent();
+
+        // Reload whenever the tray window regains focus (e.g. after Settings changes)
+        window.addEventListener('focus', loadContent);
+        return () => window.removeEventListener('focus', loadContent);
     }, []);
 
     const handleOpenMain = async () => {
         try {
             await invoke('show_main_window');
+            await getCurrentWindow().hide();
         } catch (e) {
             console.error("Failed to open main window", e);
         }
@@ -149,7 +161,7 @@ export function TrayApp() {
             {/* Header */}
             <div className="tray-header">
                 <div className="tray-date">{formatDate()}</div>
-                <div className="tray-streak">🔥 5 days</div>
+                <div className="tray-streak">🔥 {streak} {streak === 1 ? 'day' : 'days'}</div>
             </div>
 
             {/* Session CTA */}
@@ -310,8 +322,7 @@ export function TrayApp() {
 
             {/* Footer */}
             <div className="tray-footer">
-                <button className="footer-btn" tabIndex={0}>Top Menu</button>
-                <button className="footer-btn" onClick={handleOpenMain} tabIndex={0}>Open Main App ⌘O</button>
+                <button className="footer-btn" onClick={handleOpenMain} tabIndex={0}>Open Main App <span className="footer-shortcut">⌘O</span></button>
             </div>
         </div>
     );

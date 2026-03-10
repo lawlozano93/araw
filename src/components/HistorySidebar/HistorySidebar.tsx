@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import { listEntries, loadEntry } from '../../hooks/useStorage';
-import type { JournalEntry } from '../../types/models';
 import './HistorySidebar.css';
 
 interface HistorySidebarProps {

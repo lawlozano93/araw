@@ -1,0 +1,1 @@
+Everything behaves normally now natively inside the application zoom and settings mapping. Note that clearing `~/Documents/Araw/config.json` doesn't reload the data inside the loaded live Tauri Vite instance but requires you natively using CMD+R equivalent or manually reloading internally or refreshing to trigger Onboarding properly.

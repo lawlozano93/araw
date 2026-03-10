@@ -5,7 +5,7 @@ interface ReadingStepProps {
     onDone: () => void;
 }
 
-export function ReadingStep({ title, content, onDone }: ReadingStepProps) {
+export function ReadingStep({ title: _title, content, onDone }: ReadingStepProps) {
     // Strip markdown headers for cleaner display
     const cleanContent = content
         .replace(/^#+ .+$/gm, '') // Remove headers

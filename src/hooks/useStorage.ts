@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import type { JournalEntry, ActionItem, FrontalPage, Prompt, AppConfig, DailySession } from '../types/models';
+import type { JournalEntry, ActionItem, Prompt, AppConfig, DailySession } from '../types/models';
 
 // Helper to get today's date in YYYY-MM-DD format
 export const getToday = () => new Date().toISOString().split('T')[0];
@@ -80,17 +80,18 @@ export async function loadPage(type: 'goals' | 'affirmations' | 'visualizations'
     const content = await readFile(path);
 
     if (!content) {
-        // Return default content
+        // Return default content (plain text, no markdown headers)
         const defaults: Record<string, string> = {
-            goals: '# My Goals\n\n- Build meaningful products\n- Develop consistent habits\n- Live intentionally',
-            affirmations: '# Affirmations\n\n- I am capable of achieving my goals\n- I choose to focus on what matters\n- I am becoming better every day',
-            visualizations: '# Visualizations\n\nImagine yourself one year from now, having achieved your goals...',
+            goals: 'Build meaningful products\nDevelop consistent habits\nLive intentionally',
+            affirmations: 'I am capable of achieving my goals\nI choose to focus on what matters\nI am becoming better every day',
+            visualizations: 'Imagine yourself one year from now, having achieved your goals...',
         };
         await savePage(type, defaults[type]);
         return defaults[type];
     }
 
-    return content;
+    // Strip legacy markdown headers (e.g. "# My Goals\n\n") if present
+    return content.replace(/^#+ .+\n+/, '').trim();
 }
 
 export async function savePage(type: 'goals' | 'affirmations' | 'visualizations', content: string): Promise<void> {

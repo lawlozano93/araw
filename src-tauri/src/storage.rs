@@ -180,3 +180,15 @@ pub fn set_vault_path(path: String) -> Result<(), String> {
 pub fn get_vault_path() -> Result<String, String> {
     Ok(get_data_dir()?.to_string_lossy().to_string())
 }
+
+/// Reset all data by deleting the vault directory
+#[tauri::command]
+pub fn reset_data() -> Result<(), String> {
+    let base = get_data_dir()?;
+    if base.exists() {
+        fs::remove_dir_all(&base).map_err(|e| format!("Failed to delete data: {}", e))?;
+    }
+    // Recreate the empty directory structure
+    ensure_dirs()?;
+    Ok(())
+}

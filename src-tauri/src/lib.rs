@@ -1,6 +1,6 @@
 mod storage;
 
-use storage::{read_file, write_file, list_files, delete_file, get_data_path, set_vault_path, get_vault_path};
+use storage::{read_file, write_file, list_files, delete_file, get_data_path, set_vault_path, get_vault_path, reset_data};
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -23,6 +23,7 @@ fn show_main_window(window: tauri::Window) {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             // Create tray menu
@@ -112,7 +113,8 @@ pub fn run() {
             delete_file,
             get_data_path,
             set_vault_path,
-            get_vault_path
+            get_vault_path,
+            reset_data
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

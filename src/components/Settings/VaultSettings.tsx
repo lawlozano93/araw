@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { FolderOpen, ExternalLink, RefreshCw } from 'lucide-react';
+import { FolderOpen, ExternalLink } from 'lucide-react';
 import { invoke } from '@tauri-apps/api/core';
 import { openPath } from '@tauri-apps/plugin-opener';
+import { open } from '@tauri-apps/plugin-dialog';
 import { loadConfig, saveConfig } from '../../hooks/useStorage';
 
 const isWindows = navigator.userAgent.toLowerCase().includes('windows');
@@ -9,8 +10,6 @@ const explorerLabel = isWindows ? 'Open in Explorer' : 'Open in Finder';
 
 export function VaultSettings() {
     const [vaultPath, setVaultPath] = useState<string>('');
-    const [editPath, setEditPath] = useState<string>('');
-    const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState<string>('');
 
@@ -22,40 +21,49 @@ export function VaultSettings() {
         try {
             const path = await invoke<string>('get_vault_path');
             setVaultPath(path);
-            setEditPath(path);
         } catch (e) {
             console.error('Failed to load vault path', e);
         }
         setLoading(false);
     };
 
-    const handleStartEdit = () => {
-        setEditPath(vaultPath);
-        setIsEditing(true);
-    };
-
-    const handleSaveVault = async () => {
-        if (!editPath || editPath === vaultPath) {
-            setIsEditing(false);
-            return;
-        }
+    const handleChangeLocation = async () => {
         try {
-            setStatus('Moving vault...');
-            await invoke('set_vault_path', { path: editPath });
-            const config = await loadConfig();
-            await saveConfig({ ...config, vaultPath: editPath });
-            setVaultPath(editPath);
-            setIsEditing(false);
-            setStatus('Vault moved successfully!');
-            setTimeout(() => setStatus(''), 3000);
+            const selectedPath = await open({
+                directory: true,
+                multiple: false,
+                title: 'Select Vault Location'
+            });
+
+            if (selectedPath && typeof selectedPath === 'string') {
+                setStatus('Moving vault...');
+                await invoke('set_vault_path', { path: selectedPath });
+                const config = await loadConfig();
+                await saveConfig({ ...config, vaultPath: selectedPath });
+                setVaultPath(selectedPath);
+                setStatus('Vault moved successfully!');
+                setTimeout(() => setStatus(''), 3000);
+            }
         } catch (e) {
             setStatus(`Error: ${e}`);
         }
     };
 
-    const handleCancelEdit = () => {
-        setEditPath(vaultPath);
-        setIsEditing(false);
+    const handleResetData = async () => {
+        const confirmed = window.confirm(
+            "Are you sure you want to completely delete all app data, including all journal entries and settings? This action cannot be undone."
+        );
+
+        if (confirmed) {
+            try {
+                setStatus('Deleting data...');
+                await invoke('reset_data');
+                setStatus('Data has been reset. Please restart the app.');
+                // We show this indefinitely since the app is effectively wiped.
+            } catch (e) {
+                setStatus(`Error: ${e}`);
+            }
+        }
     };
 
     const handleOpenInExplorer = async () => {
@@ -74,26 +82,7 @@ export function VaultSettings() {
         <div className="vault-settings">
             <div className="vault-current">
                 <div className="vault-label">Vault Location</div>
-                {isEditing ? (
-                    <div className="vault-edit-row">
-                        <input
-                            type="text"
-                            className="vault-path-input"
-                            value={editPath}
-                            onChange={(e) => setEditPath(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleSaveVault();
-                                if (e.key === 'Escape') handleCancelEdit();
-                            }}
-                            autoFocus
-                        />
-                        <button className="vault-btn vault-btn--primary" onClick={handleSaveVault}>
-                            <RefreshCw size={14} /> Update
-                        </button>
-                    </div>
-                ) : (
-                    <div className="vault-path">{vaultPath}</div>
-                )}
+                <div className="vault-path">{vaultPath}</div>
             </div>
 
             <div className="vault-info">
@@ -101,19 +90,31 @@ export function VaultSettings() {
                 to sync your entries across devices. Your data is stored as plain Markdown files.
             </div>
 
-            {!isEditing && (
-                <div className="vault-actions">
-                    <button className="vault-btn" onClick={handleStartEdit}>
-                        <FolderOpen size={14} />
-                        Change Vault Location
-                    </button>
+            <div className="vault-actions">
+                <button className="vault-btn" onClick={handleChangeLocation}>
+                    <FolderOpen size={14} />
+                    Change Vault Location
+                </button>
 
-                    <button className="vault-btn" onClick={handleOpenInExplorer}>
-                        <ExternalLink size={14} />
-                        {explorerLabel}
-                    </button>
+                <button className="vault-btn" onClick={handleOpenInExplorer}>
+                    <ExternalLink size={14} />
+                    {explorerLabel}
+                </button>
+            </div>
+
+            <div style={{ marginTop: '24px', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
+                <div className="vault-label" style={{ color: 'var(--destructive)', marginBottom: '8px' }}>Danger Zone</div>
+                <div className="vault-info" style={{ marginBottom: '16px' }}>
+                    Resetting data will completely delete all journal entries, settings, and habits.
                 </div>
-            )}
+                <button
+                    className="vault-btn"
+                    onClick={handleResetData}
+                    style={{ borderColor: 'var(--destructive)', color: 'var(--destructive)' }}
+                >
+                    Reset App Data
+                </button>
+            </div>
 
             {status && (
                 <div className={`vault-status ${status.startsWith('Error') ? 'error' : 'success'}`}>

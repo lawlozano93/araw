@@ -22,8 +22,19 @@ Araw (Filipino for "sun" / "day") helps you start each day with intention throug
 | macOS (Intel) | [Download .dmg](https://github.com/lawlozano93/vision/releases/latest) |
 | Windows | [Download .msi](https://github.com/lawlozano93/vision/releases/latest) |
 
-> **macOS users:** Since the app is unsigned, you'll need to allow it in **System Settings → Privacy & Security → Open Anyway** on first launch. See [INSTALL.md](INSTALL.md) for details.
+### ⚠️ Installation Notes
 
+**For macOS Users:** Since the app is unsigned, macOS will flag it as "damaged" when you download it. To fix this:
+1. Move `Araw.app` from the downloaded `.dmg` into your `/Applications` folder.
+2. Open the **Terminal** app.
+3. Run this exact command to remove the quarantine flag:
+   ```bash
+   xattr -cr /Applications/Araw.app
+   ```
+4. You can now open the app normally!
+
+**For Windows Users:** Since the app is unsigned, Microsoft Defender SmartScreen may display a blue "Windows protected your PC" warning.
+- Click **"More info"** > **"Run anyway"** to proceed with the installation.
 ---
 
 ## Features

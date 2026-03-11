@@ -11,7 +11,14 @@ export function TitleBar({ title = 'Araw' }: TitleBarProps) {
 
     const handleMinimize = () => appWindow.minimize();
     const handleMaximize = () => appWindow.toggleMaximize();
-    const handleClose = () => appWindow.close();
+    const handleClose = async () => {
+        const isWindows = navigator.userAgent.toLowerCase().includes('windows');
+        if (isWindows) {
+            appWindow.close();
+        } else {
+            appWindow.hide();
+        }
+    };
 
     return (
         <div className="titlebar" data-tauri-drag-region>

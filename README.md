@@ -12,6 +12,10 @@ Araw (Filipino for "sun" / "day") helps you start each day with intention throug
 4. ✍️ **Conscious Stream** — Clear your mind with freewriting
 5. 💡 **Answer a Prompt** — Define your most important action
 
+
+https://github.com/user-attachments/assets/dd9ac906-6080-42b6-8f63-b80bc54afe5d
+
+
 ---
 
 ## Download

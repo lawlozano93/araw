@@ -26,19 +26,19 @@ The application is split into two main pieces that communicate via Tauri's inter
 
 ```mermaid
 graph TD;
-    subgraph Frontend [React Frontend (Webview)]
-        App[App.tsx / Router]
-        Wizard[Daily Wizard Workflow]
-        Dash[Dashboard]
-        Tray[Tray App View]
-        Hooks[Hooks / Storage Handlers]
+    subgraph Frontend ["React Frontend (Webview)"]
+        App["App.tsx / Router"]
+        Wizard["Daily Wizard Workflow"]
+        Dash["Dashboard"]
+        Tray["Tray App View"]
+        Hooks["Hooks / Storage Handlers"]
     end
 
-    subgraph Backend [Rust Backend (Tauri Core)]
-        TauriSetup[Tauri Builder / setup]
-        IPC[IPC Command Handlers]
-        StorageOS[OS File System / storage.rs]
-        Menu[System Tray / Window Manager]
+    subgraph Backend ["Rust Backend (Tauri Core)"]
+        TauriSetup["Tauri Builder / setup"]
+        IPC["IPC Command Handlers"]
+        StorageOS["OS File System / storage.rs"]
+        Menu["System Tray / Window Manager"]
     end
 
     App --> Hooks

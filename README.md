@@ -1,6 +1,6 @@
 # ☀️ Araw
 
-**Free, open-source, local-first daily journaling app.**
+**Free, open-source, local-first daily journaling app w/ goals & affirmations.**
 
 No accounts. No cloud lock-in. No subscriptions. Just you and your journal.
 
@@ -76,4 +76,4 @@ npm run tauri build  # Production
 
 ## License
 
-MIT © [Lawrence Lozano](https://github.com/lawlozano93)
+MIT © [Lawrrence Lozano](https://github.com/lawlozano93)

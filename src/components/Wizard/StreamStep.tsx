@@ -23,6 +23,7 @@ export function StreamStep({ value, onChange, onDone }: StreamStepProps) {
     // Timer logic
     const timer = useTimer(0);
     const autoStartTimeoutRef = useRef<number | null>(null);
+    const [isTimerVisible, setIsTimerVisible] = useState(true);
 
     const handleAddFormattedTime = () => {
         // Add 5 minutes
@@ -47,6 +48,7 @@ export function StreamStep({ value, onChange, onDone }: StreamStepProps) {
             clearTimeout(autoStartTimeoutRef.current);
         }
         timer.reset();
+        setIsTimerVisible(false);
     };
 
     useEffect(() => {
@@ -68,20 +70,30 @@ export function StreamStep({ value, onChange, onDone }: StreamStepProps) {
                 />
             </div>
             <div className="wizard-step-footer">
-                <div
-                    className={`stream-timer ${timer.isRunning ? 'running' : ''} ${timer.displayTime === '00:00' ? 'empty' : ''}`}
-                    onClick={handleAddFormattedTime}
-                    title="Click to add 5 minutes"
-                >
-                    {timer.displayTime === '00:00' ? (
-                        <span className="timer-placeholder">+ Add time</span>
-                    ) : (
-                        <>
-                            <span className="timer-display">{timer.displayTime}</span>
-                            <button className="timer-clear" onClick={handleClearTimer} title="Clear timer">×</button>
-                        </>
-                    )}
-                </div>
+                {isTimerVisible ? (
+                    <div
+                        className={`stream-timer ${timer.isRunning ? 'running' : ''} ${timer.displayTime === '00:00' ? 'empty' : ''}`}
+                        onClick={handleAddFormattedTime}
+                        title="Click to add 5 minutes"
+                    >
+                        {timer.displayTime === '00:00' ? (
+                            <span className="timer-placeholder">+ Add time</span>
+                        ) : (
+                            <>
+                                <span className="timer-display">{timer.displayTime}</span>
+                                <button className="timer-clear" onClick={handleClearTimer} title="Clear timer">×</button>
+                            </>
+                        )}
+                    </div>
+                ) : (
+                    <button
+                        className="stream-timer-show"
+                        onClick={() => setIsTimerVisible(true)}
+                        title="Show timer"
+                    >
+                        ⏱️ Show Timer
+                    </button>
+                )}
                 <button
                     onClick={onDone}
                     disabled={!value.trim()}

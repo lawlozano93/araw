@@ -4,6 +4,7 @@ import { loadPage, saveEntry, loadEntry } from '../../hooks/useStorage';
 import { ReadingStep } from './ReadingStep';
 import { StreamStep } from './StreamStep';
 import { AnswerStep } from './AnswerStep';
+import { CompletionScreen } from './CompletionScreen';
 import './Wizard.css';
 
 interface WizardProps {
@@ -29,6 +30,7 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
     const [selectedPrompt] = useState<Prompt>(FOCUS_PROMPT);
     const [streamText, setStreamText] = useState('');
     const [answerText, setAnswerText] = useState('');
+    const [showCompletion, setShowCompletion] = useState(false);
 
     // Determine starting step based on session state
     useEffect(() => {
@@ -105,7 +107,7 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
                 actions: [mainActionItem],
             });
             onUpdateSession({ promptAnswered: true });
-            onComplete();
+            setShowCompletion(true);
         }
     };
 
@@ -182,6 +184,7 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
             <button className="wizard-back" onClick={onBack}>
                 ← Back
             </button>
+            {showCompletion && <CompletionScreen onFinish={onComplete} />}
         </div>
     );
 }

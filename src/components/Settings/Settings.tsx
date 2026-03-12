@@ -16,6 +16,7 @@ export function Settings({ onBack }: SettingsProps) {
     const [content, setContent] = useState('');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [showToast, setShowToast] = useState(false);
 
     useEffect(() => {
         if (activeTab !== 'vault') {
@@ -39,6 +40,8 @@ export function Settings({ onBack }: SettingsProps) {
         setSaving(true);
         try {
             await savePage(activeTab, content);
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
         } catch (error) {
             console.error('Failed to save content', error);
         }
@@ -46,7 +49,12 @@ export function Settings({ onBack }: SettingsProps) {
     };
 
     return (
-        <div className="settings-container">
+        <div className="settings-container" style={{ position: 'relative' }}>
+            {showToast && (
+                <div className="settings-toast">
+                    Settings saved successfully
+                </div>
+            )}
             <div className="settings-header">
                 <button className="back-btn" onClick={onBack}>
                     <ArrowLeft size={16} /> Back

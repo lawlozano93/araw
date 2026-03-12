@@ -457,3 +457,23 @@
 .timer-clear:hover {
     opacity: 1;
 }
+
+.stream-timer-show {
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--muted-foreground);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stream-timer-show:hover {
+    border-color: var(--primary);
+    color: var(--foreground);
+    background: var(--accent);
+}

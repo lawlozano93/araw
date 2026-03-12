@@ -55,6 +55,10 @@ Araw (Filipino for "sun" / "day") helps you start each day with intention throug
 - **Icons:** [Lucide](https://lucide.dev)
 - **Font:** [Amatic SC](https://fonts.google.com/specimen/Amatic+SC) (OFL)
 
+## Architecture & Development
+
+For an in-depth look at how Araw is built, including its local-first storage design and Tauri system architecture, check out the [Architecture & Developer Guide](ARCHITECTURE.md).
+
 ---
 
 ## Building from Source

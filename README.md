@@ -13,8 +13,7 @@ Araw (Filipino for "sun" / "day") helps you start each day with intention throug
 5. 💡 **Answer a Prompt** — Define your most important action
 
 
-
-https://github.com/user-attachments/assets/a450a981-e59f-4cd5-8b4e-4dfc05712e37
+![araw](https://github.com/user-attachments/assets/91d4306f-df90-4cb4-8029-da33abf4adb8)
 
 
 

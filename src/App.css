@@ -203,18 +203,6 @@ body,
   -webkit-app-region: no-drag;
 }
 
-.titlebar-button:first-child {
-  background: #ff5f57;
-}
-
-.titlebar-button:nth-child(2) {
-  background: #ffbd2e;
-}
-
-.titlebar-button.close {
-  background: #28c940;
-}
-
 /* Bottom nav */
 .bottom-nav {
   position: absolute;

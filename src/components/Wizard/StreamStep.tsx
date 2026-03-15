@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTimer } from '../../hooks/useTimer';
+import { useSound } from '../../hooks/useSound';
 
 interface StreamStepProps {
     value: string;
@@ -16,16 +17,18 @@ const PLACEHOLDERS = [
 
 export function StreamStep({ value, onChange, onDone }: StreamStepProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const playSound = useSound();
     const [placeholder] = useState(() =>
         PLACEHOLDERS[Math.floor(Math.random() * PLACEHOLDERS.length)]
     );
 
     // Timer logic
-    const timer = useTimer(0);
+    const timer = useTimer(0, { onExpire: playSound });
     const autoStartTimeoutRef = useRef<number | null>(null);
     const [isTimerVisible, setIsTimerVisible] = useState(true);
 
     const handleAddFormattedTime = () => {
+        playSound();
         // Add 5 minutes
         timer.addTime(5);
 

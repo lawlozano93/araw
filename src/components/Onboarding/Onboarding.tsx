@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { savePage, loadConfig, saveConfig } from '../../hooks/useStorage';
 import { SmartTextarea } from '../SmartTextarea';
+import { useSound } from '../../hooks/useSound';
 import './Onboarding.css';
 
 interface OnboardingProps {
@@ -8,6 +9,7 @@ interface OnboardingProps {
 }
 
 export function Onboarding({ onComplete }: OnboardingProps) {
+    const playSound = useSound();
     const [step, setStep] = useState(0);
     const [goals, setGoals] = useState('');
     const [affirmations, setAffirmations] = useState('');
@@ -19,6 +21,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
     const TOTAL_STEPS = 5;
 
     const handleNext = async () => {
+        playSound();
         if (step < TOTAL_STEPS - 1) {
             setStep(step + 1);
         } else {
@@ -33,6 +36,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
     };
 
     const handleBack = () => {
+        playSound();
         if (step > 0) setStep(step - 1);
     };
 

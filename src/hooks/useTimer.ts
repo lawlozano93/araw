@@ -2,7 +2,11 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 type TimerState = 'idle' | 'running' | 'paused';
 
-export function useTimer(initialMinutes: number = 25) {
+interface UseTimerOptions {
+    onExpire?: () => void;
+}
+
+export function useTimer(initialMinutes: number = 25, options?: UseTimerOptions) {
     const [totalSeconds, setTotalSeconds] = useState(initialMinutes * 60);
     const [state, setState] = useState<TimerState>('idle');
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -20,11 +24,15 @@ export function useTimer(initialMinutes: number = 25) {
         if (state === 'running') {
             intervalRef.current = window.setInterval(() => {
                 setElapsedSeconds(prev => {
-                    if (prev >= totalSeconds) {
-                        // Timer complete
+                    if (prev >= totalSeconds - 1) {
+                        // Timer complete (prev is about to hit totalSeconds)
                         if (intervalRef.current) clearInterval(intervalRef.current);
                         setState('idle');
-                        return 0;
+                        // Call onExpire if provided
+                        if (options?.onExpire) {
+                            options.onExpire();
+                        }
+                        return prev + 1; // Or return totalSeconds
                     }
                     return prev + 1;
                 });

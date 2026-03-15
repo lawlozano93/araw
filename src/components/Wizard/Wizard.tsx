@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { WizardStep, DailySession, Prompt } from '../../types/models';
 import { loadPage, saveEntry, loadEntry } from '../../hooks/useStorage';
+import { useSound } from '../../hooks/useSound';
 import { ReadingStep } from './ReadingStep';
 import { StreamStep } from './StreamStep';
 import { AnswerStep } from './AnswerStep';
@@ -22,6 +23,7 @@ const FOCUS_PROMPT: Prompt = {
 };
 
 export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardProps) {
+    const playSound = useSound();
     const [step, setStep] = useState<WizardStep>(1);
     const [goalsContent, setGoalsContent] = useState('');
     const [affirmationsContent, setAffirmationsContent] = useState('');
@@ -68,6 +70,7 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
     }, [session.date, session.streamDone, session.promptAnswered]);
 
     const handleNext = async () => {
+        playSound();
         if (step === 1) {
             onUpdateSession({ readGoals: true });
             setStep(2);
@@ -181,7 +184,7 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
             </div>
 
             {/* Back button */}
-            <button className="wizard-back" onClick={onBack}>
+            <button className="wizard-back" onClick={() => { playSound(); onBack(); }}>
                 ← Back
             </button>
             {showCompletion && <CompletionScreen onFinish={onComplete} />}

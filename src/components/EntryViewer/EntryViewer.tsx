@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { loadEntry } from '../../hooks/useStorage';
 import type { JournalEntry } from '../../types/models';
+import { useSound } from '../../hooks/useSound';
 import './EntryViewer.css';
 
 interface EntryViewerProps {
@@ -11,6 +12,7 @@ interface EntryViewerProps {
 export function EntryViewer({ date, onClose }: EntryViewerProps) {
     const [entry, setEntry] = useState<JournalEntry | null>(null);
     const [loading, setLoading] = useState(true);
+    const playSound = useSound();
 
     useEffect(() => {
         loadEntry(date)
@@ -19,7 +21,8 @@ export function EntryViewer({ date, onClose }: EntryViewerProps) {
             .finally(() => setLoading(false));
     }, [date]);
 
-    const formattedDate = new Date(date).toLocaleDateString('en-US', {
+    const [y, m, d] = date.split('-').map(Number);
+    const formattedDate = new Date(y, (m || 1) - 1, d || 1).toLocaleDateString('en-US', {
         weekday: 'long',
         month: 'long',
         day: 'numeric',
@@ -39,7 +42,15 @@ export function EntryViewer({ date, onClose }: EntryViewerProps) {
             <div className="entry-viewer">
                 <div className="entry-viewer-empty">
                     <p>No entry found for this date.</p>
-                    <button className="entry-back" onClick={onClose}>← Back</button>
+                    <button
+                        className="entry-back"
+                        onClick={() => {
+                            playSound();
+                            onClose();
+                        }}
+                    >
+                        ← Back
+                    </button>
                 </div>
             </div>
         );
@@ -49,6 +60,9 @@ export function EntryViewer({ date, onClose }: EntryViewerProps) {
         <div className="entry-viewer">
             <div className="entry-viewer-header">
                 <h1 className="entry-viewer-date">{formattedDate}</h1>
+                {entry.inProgress ? (
+                    <div className="entry-in-progress">In progress</div>
+                ) : null}
             </div>
 
             <div className="entry-viewer-content">
@@ -84,7 +98,15 @@ export function EntryViewer({ date, onClose }: EntryViewerProps) {
                 )}
             </div>
 
-            <button className="entry-back" onClick={onClose}>← Back to Today</button>
+            <button
+                className="entry-back"
+                onClick={() => {
+                    playSound();
+                    onClose();
+                }}
+            >
+                ← Back to Today
+            </button>
         </div>
     );
 }

@@ -136,6 +136,10 @@ body,
     cursor: pointer;
     border-radius: 6px;
     transition: background 0.1s;
+    background: transparent;
+    border: none;
+    font: inherit;
+    width: 100%;
 }
 
 .section-header:hover {

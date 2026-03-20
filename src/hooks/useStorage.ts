@@ -1,8 +1,19 @@
 import { invoke } from '@tauri-apps/api/core';
 import type { JournalEntry, ActionItem, Prompt, AppConfig, DailySession } from '../types/models';
 
-// Helper to get today's date in YYYY-MM-DD format
-export const getToday = () => new Date().toISOString().split('T')[0];
+// Helper to get today's date in YYYY-MM-DD format (local time, not UTC).
+export const getToday = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
+function parseYYYYMMDDLocal(dateStr: string): Date {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, (m || 1) - 1, d || 1);
+}
 
 // File paths
 const PATHS = {
@@ -144,6 +155,11 @@ export async function listEntries(): Promise<string[]> {
 // ============ Markdown Parsing ============
 
 function parseEntryMarkdown(content: string, date: string): JournalEntry {
+    const DRAFT_MARKER_REGEX = /<!--\s*ARAW_DRAFT\s+step=(\d+)\s*-->/;
+    const markerMatch = content.match(DRAFT_MARKER_REGEX);
+    const inProgress = !!markerMatch;
+    const draftStep = markerMatch ? Number(markerMatch[1]) : undefined;
+
     const sections = content.split(/^## /m);
 
     let streamText = '';
@@ -182,17 +198,26 @@ function parseEntryMarkdown(content: string, date: string): JournalEntry {
         promptText,
         answerText,
         actions,
+        inProgress,
+        draftStep,
     };
 }
 
 function formatEntryMarkdown(entry: JournalEntry): string {
-    const dateFormatted = new Date(entry.date).toLocaleDateString('en-US', {
+    const draftStep = entry.draftStep;
+    const shouldMarkDraft = entry.inProgress || typeof draftStep === 'number';
+
+    const dateFormatted = parseYYYYMMDDLocal(entry.date).toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',
         year: 'numeric',
     });
 
     let md = `# ${dateFormatted}\n\n`;
+
+    if (shouldMarkDraft) {
+        md += `<!-- ARAW_DRAFT step=${draftStep ?? 5} -->\n\n`;
+    }
 
     if (entry.streamText) {
         md += `## Conscious Stream\n${entry.streamText}\n\n`;

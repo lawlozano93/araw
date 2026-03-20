@@ -21,7 +21,7 @@ export function useTimer(initialMinutes: number = 25, options?: UseTimerOptions)
 
     // Timer tick
     useEffect(() => {
-        if (state === 'running') {
+        if (state === 'running' && totalSeconds > 0) {
             intervalRef.current = window.setInterval(() => {
                 setElapsedSeconds(prev => {
                     if (prev >= totalSeconds - 1) {
@@ -37,6 +37,9 @@ export function useTimer(initialMinutes: number = 25, options?: UseTimerOptions)
                     return prev + 1;
                 });
             }, 1000);
+        } else if (state === 'running' && totalSeconds <= 0) {
+            // If initialized with 0 minutes, keep timer idle until time is added.
+            setState('idle');
         } else {
             if (intervalRef.current) clearInterval(intervalRef.current);
         }
@@ -47,8 +50,12 @@ export function useTimer(initialMinutes: number = 25, options?: UseTimerOptions)
     }, [state, totalSeconds]);
 
     const start = useCallback(() => {
+        if (totalSeconds <= 0) {
+            setState('idle');
+            return;
+        }
         setState('running');
-    }, []);
+    }, [totalSeconds]);
 
     const pause = useCallback(() => {
         setState('paused');
@@ -77,7 +84,7 @@ export function useTimer(initialMinutes: number = 25, options?: UseTimerOptions)
 
     const displayTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-    const progress = elapsedSeconds / totalSeconds;
+    const progress = totalSeconds > 0 ? elapsedSeconds / totalSeconds : 0;
 
     return {
         state,

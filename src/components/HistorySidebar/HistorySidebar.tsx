@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { listEntries, loadEntry } from '../../hooks/useStorage';
+import { useSound } from '../../hooks/useSound';
 import './HistorySidebar.css';
 
 interface HistorySidebarProps {
@@ -11,12 +12,14 @@ interface HistorySidebarProps {
 interface EntryPreview {
     date: string;
     preview: string;
+    inProgress?: boolean;
 }
 
 export function HistorySidebar({ isOpen, onClose, onSelectEntry }: HistorySidebarProps) {
     const [entries, setEntries] = useState<EntryPreview[]>([]);
     const [entryDates, setEntryDates] = useState<Set<string>>(new Set());
     const [selectedMonth, setSelectedMonth] = useState(new Date());
+    const playSound = useSound();
 
     useEffect(() => {
         if (isOpen) {
@@ -31,11 +34,23 @@ export function HistorySidebar({ isOpen, onClose, onSelectEntry }: HistorySideba
 
             // Load previews for recent entries
             const previews: EntryPreview[] = [];
-            for (const date of dates.slice(0, 10)) {
-                const entry = await loadEntry(date);
-                if (entry) {
-                    const preview = entry.streamText?.slice(0, 40) || entry.answerText?.slice(0, 40) || '';
-                    previews.push({ date, preview: preview + (preview.length >= 40 ? '...' : '') });
+            const recentDates = dates.slice(0, 10);
+            const entryResults = await Promise.all(
+                recentDates.map(async (date) => {
+                    try {
+                        return { date, entry: await loadEntry(date) };
+                    } catch {
+                        return { date, entry: null };
+                    }
+                })
+            );
+
+            for (const result of entryResults) {
+                if (result.entry) {
+                    const preview =
+                        result.entry.streamText?.slice(0, 40) || result.entry.answerText?.slice(0, 40) || '';
+                    const trimmed = preview + (preview.length >= 40 ? '...' : '');
+                    previews.push({ date: result.date, preview: trimmed, inProgress: result.entry.inProgress });
                 }
             }
             setEntries(previews);
@@ -70,21 +85,26 @@ export function HistorySidebar({ isOpen, onClose, onSelectEntry }: HistorySideba
     const monthLabel = selectedMonth.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
     const prevMonth = () => {
+        playSound();
         setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1));
     };
 
     const nextMonth = () => {
+        playSound();
         setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1));
     };
 
     const formatDateForCheck = (day: number) => {
         const d = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), day);
-        return d.toISOString().split('T')[0];
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const date = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${date}`;
     };
 
     const formatEntryDate = (dateStr: string) => {
-        const d = new Date(dateStr);
-        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const [y, m, d] = dateStr.split('-').map(Number);
+        return new Date(y, (m || 1) - 1, d || 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     };
 
     if (!isOpen) return null;
@@ -93,7 +113,7 @@ export function HistorySidebar({ isOpen, onClose, onSelectEntry }: HistorySideba
         <div className="history-sidebar">
             <div className="history-header">
                 <span>History ↗</span>
-                <button className="history-close" onClick={onClose}>×</button>
+                    <button className="history-close" onClick={() => { playSound(); onClose(); }}>×</button>
             </div>
 
             {/* Mini Calendar */}
@@ -115,16 +135,24 @@ export function HistorySidebar({ isOpen, onClose, onSelectEntry }: HistorySideba
                         }
                         const dateStr = formatDateForCheck(day);
                         const hasEntry = entryDates.has(dateStr);
-                        const isToday = dateStr === new Date().toISOString().split('T')[0];
+                        const now = new Date();
+                        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                        const isToday = dateStr === todayStr;
 
                         return (
-                            <span
+                            <button
+                                type="button"
                                 key={i}
                                 className={`calendar-day ${hasEntry ? 'has-entry' : ''} ${isToday ? 'today' : ''}`}
-                                onClick={() => hasEntry && onSelectEntry(dateStr)}
+                                disabled={!hasEntry}
+                                aria-label={hasEntry ? `Open entry for ${formatEntryDate(dateStr)}` : `No entry for ${formatEntryDate(dateStr)}`}
+                                onClick={() => {
+                                    playSound();
+                                    onSelectEntry(dateStr);
+                                }}
                             >
                                 {day}
-                            </span>
+                            </button>
                         );
                     })}
                 </div>
@@ -133,14 +161,20 @@ export function HistorySidebar({ isOpen, onClose, onSelectEntry }: HistorySideba
             {/* Entry List */}
             <div className="history-entries">
                 {entries.map(entry => (
-                    <div
+                    <button
                         key={entry.date}
                         className="history-entry"
-                        onClick={() => onSelectEntry(entry.date)}
+                        onClick={() => {
+                            playSound();
+                            onSelectEntry(entry.date);
+                        }}
                     >
-                        <div className="history-entry-preview">{entry.preview || 'No content'}</div>
+                        <div className="history-entry-preview">
+                            {entry.inProgress ? <span className="in-progress">In progress • </span> : null}
+                            {entry.preview || 'No content'}
+                        </div>
                         <div className="history-entry-date">{formatEntryDate(entry.date)}</div>
-                    </div>
+                    </button>
                 ))}
                 {entries.length === 0 && (
                     <div className="history-empty">No entries yet</div>

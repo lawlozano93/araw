@@ -3,13 +3,15 @@ import { ArrowLeft } from 'lucide-react';
 import { loadPage, savePage } from '../../hooks/useStorage';
 import { VaultSettings } from './VaultSettings';
 import { SmartTextarea } from '../SmartTextarea';
+import { useSound } from '../../hooks/useSound';
+import { Shortcuts } from './Shortcuts';
 
 interface SettingsProps {
     onBack: () => void;
 }
 
-type Tab = 'goals' | 'affirmations' | 'visualizations' | 'vault';
-type ContentTab = Exclude<Tab, 'vault'>;
+type Tab = 'goals' | 'affirmations' | 'visualizations' | 'vault' | 'shortcuts';
+type ContentTab = Exclude<Tab, 'vault' | 'shortcuts'>;
 
 export function Settings({ onBack }: SettingsProps) {
     const [activeTab, setActiveTab] = useState<Tab>('goals');
@@ -17,11 +19,11 @@ export function Settings({ onBack }: SettingsProps) {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [showToast, setShowToast] = useState(false);
+    const playSound = useSound();
 
     useEffect(() => {
-        if (activeTab !== 'vault') {
-            loadContent(activeTab);
-        }
+        if (activeTab === 'vault' || activeTab === 'shortcuts') return;
+        loadContent(activeTab as ContentTab);
     }, [activeTab]);
 
     const loadContent = async (type: ContentTab) => {
@@ -36,7 +38,8 @@ export function Settings({ onBack }: SettingsProps) {
     };
 
     const handleSave = async () => {
-        if (activeTab === 'vault') return;
+        if (activeTab === 'vault' || activeTab === 'shortcuts') return;
+        playSound();
         setSaving(true);
         try {
             await savePage(activeTab, content);
@@ -56,7 +59,7 @@ export function Settings({ onBack }: SettingsProps) {
                 </div>
             )}
             <div className="settings-header">
-                <button className="back-btn" onClick={onBack}>
+                <button className="back-btn" onClick={() => { playSound(); onBack(); }}>
                     <ArrowLeft size={16} /> Back
                 </button>
                 <h2>Settings</h2>
@@ -88,11 +91,20 @@ export function Settings({ onBack }: SettingsProps) {
                 >
                     Vault
                 </button>
+                <button
+                    className={`tab-btn ${activeTab === 'shortcuts' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('shortcuts')}
+                    title="Keyboard shortcuts"
+                >
+                    Shortcuts
+                </button>
             </div>
 
             <div className="settings-content">
                 {activeTab === 'vault' ? (
                     <VaultSettings />
+                ) : activeTab === 'shortcuts' ? (
+                    <Shortcuts />
                 ) : loading ? (
                     <div className="loading-spinner">Loading...</div>
                 ) : (
@@ -105,15 +117,17 @@ export function Settings({ onBack }: SettingsProps) {
                 )}
             </div>
 
-            <div className="settings-footer">
-                <button
-                    className="save-btn"
-                    onClick={handleSave}
-                    disabled={saving || loading}
-                >
-                    {saving ? 'Saving...' : 'Save Changes'}
-                </button>
-            </div>
+            {activeTab !== 'vault' && activeTab !== 'shortcuts' && (
+                <div className="settings-footer">
+                    <button
+                        className="save-btn"
+                        onClick={handleSave}
+                        disabled={saving || loading}
+                    >
+                        {saving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

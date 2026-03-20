@@ -4,6 +4,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { openPath } from '@tauri-apps/plugin-opener';
 import { open } from '@tauri-apps/plugin-dialog';
 import { loadConfig, saveConfig } from '../../hooks/useStorage';
+import { useSound } from '../../hooks/useSound';
 
 const isWindows = navigator.userAgent.toLowerCase().includes('windows');
 const explorerLabel = isWindows ? 'Open in Explorer' : 'Open in Finder';
@@ -12,6 +13,7 @@ export function VaultSettings() {
     const [vaultPath, setVaultPath] = useState<string>('');
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState<string>('');
+    const playSound = useSound();
 
     useEffect(() => {
         loadVaultPath();
@@ -28,6 +30,7 @@ export function VaultSettings() {
     };
 
     const handleChangeLocation = async () => {
+        playSound();
         try {
             const selectedPath = await open({
                 directory: true,
@@ -50,6 +53,7 @@ export function VaultSettings() {
     };
 
     const handleResetData = async () => {
+        playSound();
         const confirmed = window.confirm(
             "Are you sure you want to completely delete all app data, including all journal entries and settings? This action cannot be undone."
         );
@@ -67,6 +71,7 @@ export function VaultSettings() {
     };
 
     const handleOpenInExplorer = async () => {
+        playSound();
         try {
             await openPath(vaultPath);
         } catch (e) {

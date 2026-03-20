@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 import { loadEntry, getToday } from '../../hooks/useStorage';
 import type { JournalEntry, ActionItem } from '../../types/models';
+import { useSound } from '../../hooks/useSound';
 
 interface DashboardProps {
     onStartSession: () => void;
@@ -21,6 +22,7 @@ interface DashboardProps {
 
 export function Dashboard({ onStartSession, session, actions, onToggleAction, onAddAction, onDeleteAction }: DashboardProps) {
     const [entry, setEntry] = useState<JournalEntry | null>(null);
+    const playSound = useSound();
 
     const greeting = () => {
         const hour = new Date().getHours();
@@ -64,7 +66,10 @@ export function Dashboard({ onStartSession, session, actions, onToggleAction, on
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') handleAddAction();
+        if (e.key === 'Enter') {
+            playSound();
+            handleAddAction();
+        }
     };
 
     return (
@@ -89,7 +94,13 @@ export function Dashboard({ onStartSession, session, actions, onToggleAction, on
                             : `Continue where you left off (step ${completedSteps + 1} of 5)`
                         }
                     </p>
-                    <button className="start-btn" onClick={onStartSession}>
+                    <button
+                        className="start-btn"
+                        onClick={() => {
+                            playSound();
+                            onStartSession();
+                        }}
+                    >
                         {completedSteps === 0 ? 'Start Session' : 'Continue'}
                     </button>
                 </>
@@ -112,15 +123,20 @@ export function Dashboard({ onStartSession, session, actions, onToggleAction, on
                         </div>
 
                         {mainAction ? (
-                            <div
+                            <button
+                                type="button"
                                 className={`main-goal-item ${mainAction.done ? 'done' : ''}`}
-                                onClick={() => onToggleAction(mainAction.id)}
+                                onClick={() => {
+                                    playSound();
+                                    onToggleAction(mainAction.id);
+                                }}
+                                aria-label={mainAction.done ? `Mark "${mainAction.text}" as not done` : `Mark "${mainAction.text}" as done`}
                             >
                                 <div className={`action-checkbox ${mainAction.done ? 'checked' : ''}`}>
                                     {mainAction.done && '✓'}
                                 </div>
                                 <span className="action-text">{mainAction.text}</span>
-                            </div>
+                            </button>
                         ) : (
                             <div className="awaiting-answer">
                                 Awaiting answer...
@@ -137,7 +153,20 @@ export function Dashboard({ onStartSession, session, actions, onToggleAction, on
                                 <div
                                     key={action.id}
                                     className={`action-item ${action.done ? 'done' : ''}`}
-                                    onClick={() => onToggleAction(action.id)}
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => {
+                                        playSound();
+                                        onToggleAction(action.id);
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            playSound();
+                                            onToggleAction(action.id);
+                                        }
+                                    }}
+                                    aria-label={action.done ? `Mark "${action.text}" as not done` : `Mark "${action.text}" as done`}
                                 >
                                     <div className={`action-checkbox ${action.done ? 'checked' : ''}`}>
                                         {action.done && '✓'}
@@ -145,16 +174,18 @@ export function Dashboard({ onStartSession, session, actions, onToggleAction, on
                                     <span className="action-text">{action.text}</span>
 
                                     {onDeleteAction && (
-                                        <div
+                                        <button
+                                            type="button"
                                             className="delete-btn"
                                             onClick={(e) => {
                                                 e.stopPropagation();
+                                                playSound();
                                                 onDeleteAction(action.id);
                                             }}
                                             title="Delete task"
                                         >
                                             <Trash2 size={14} />
-                                        </div>
+                                        </button>
                                     )}
                                 </div>
                             ))}
@@ -183,7 +214,10 @@ export function Dashboard({ onStartSession, session, actions, onToggleAction, on
                                 />
                                 {newActionText.length > 0 && (
                                     <button
-                                        onClick={handleAddAction}
+                                        onClick={() => {
+                                            playSound();
+                                            handleAddAction();
+                                        }}
                                         disabled={!newActionText.trim()}
                                         style={{
                                             background: 'var(--primary)',

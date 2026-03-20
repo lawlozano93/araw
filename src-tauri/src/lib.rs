@@ -116,6 +116,16 @@ pub fn run() {
             get_vault_path,
             reset_data
         ])
+        .on_window_event(|window, event| {
+            // macOS "close" should behave like "hide to tray" to match your custom X button.
+            // Note: tray "Quit" still calls `app.exit(0)` which should terminate the process.
+            if cfg!(target_os = "macos") {
+                if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                    let _ = window.hide();
+                    api.prevent_close();
+                }
+            }
+        })
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(|app_handle, event| {

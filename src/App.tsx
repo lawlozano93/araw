@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { History, Settings as SettingsIcon, Moon, Sun, ZoomIn, ZoomOut } from 'lucide-react';
 import { TitleBar } from './components/TitleBar/TitleBar';
 import { Dashboard } from './components/Dashboard/Dashboard';
@@ -10,6 +10,9 @@ import { Onboarding } from './components/Onboarding/Onboarding';
 import { Settings } from './components/Settings/Settings';
 import { useSession, useTheme, useActions } from './hooks/useSession';
 import { useWindowLabel } from './hooks/useWindowLabel';
+import { useSound } from './hooks/useSound';
+import { listen } from '@tauri-apps/api/event';
+import { getToday } from './hooks/useStorage';
 import './App.css';
 
 type View = 'dashboard' | 'wizard' | 'entry' | 'settings';
@@ -19,31 +22,120 @@ function App() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [selectedEntryDate, setSelectedEntryDate] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const playSound = useSound();
+  const sessionRef = useRef<any>(null);
 
   // TEST MODE: Removed test date selector
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey) {
-        if (e.key === '=' || e.key === '+') {
-          e.preventDefault();
-          setZoomLevel((prev) => Math.min(prev + 0.1, 2.0));
-        } else if (e.key === '-') {
-          e.preventDefault();
-          setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));
-        } else if (e.key === '0') {
-          e.preventDefault();
-          setZoomLevel(1);
+      // Only apply shortcuts in the main window.
+      if (windowLabel !== 'main') return;
+
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName?.toLowerCase();
+      const isTypingElement =
+        tag === 'input' || tag === 'textarea' || (target ? (target as any).isContentEditable : false);
+      if (isTypingElement) return;
+
+      const hasMod = e.ctrlKey || e.metaKey;
+      if (!hasMod) return;
+
+      const key = e.key;
+      const keyLower = key.toLowerCase();
+
+      // Main shortcuts
+      if (key === ',') {
+        e.preventDefault();
+        playSound();
+        setHistoryOpen(false);
+        setView('settings');
+        return;
+      }
+
+      if (keyLower === 'h') {
+        e.preventDefault();
+        playSound();
+        if (view === 'dashboard') {
+          setHistoryOpen(prev => !prev);
         }
+        return;
+      }
+
+      if (key === 'Enter') {
+        e.preventDefault();
+        playSound();
+        const currentSession = sessionRef.current;
+        if (view === 'dashboard' && currentSession) {
+          if (currentSession.promptAnswered) {
+            setSelectedEntryDate(getToday());
+            setHistoryOpen(false);
+            setView('entry');
+          } else {
+            setSelectedEntryDate(null);
+            setHistoryOpen(false);
+            setView('wizard');
+          }
+        }
+        return;
+      }
+
+      // Zoom shortcuts
+      if (key === '=' || key === '+') {
+        e.preventDefault();
+        setZoomLevel((prev) => Math.min(prev + 0.1, 2.0));
+      } else if (key === '-') {
+        e.preventDefault();
+        setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));
+      } else if (key === '0') {
+        e.preventDefault();
+        setZoomLevel(1);
       }
     };
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [windowLabel, view, playSound]);
 
   const { session, loading, updateSession, onboardingComplete, completeOnboarding } = useSession();
+  // Keep latest session in a ref so key handlers can read it without re-registering.
+  sessionRef.current = session;
   const { theme, toggleTheme } = useTheme();
   const { actions, toggleAction, addAction, deleteAction, refresh: refreshActions } = useActions();
+
+  useEffect(() => {
+    if (windowLabel !== 'main') return;
+
+    const openWizard = () => {
+      setSelectedEntryDate(null);
+      setHistoryOpen(false);
+      setView('wizard');
+    };
+
+    let unlisten: undefined | (() => void);
+
+    const init = async () => {
+      // Fallback for when we trigger from the tray UI before listeners are ready.
+      if (localStorage.getItem('openWizardOnStart') === 'true') {
+        localStorage.removeItem('openWizardOnStart');
+        openWizard();
+      }
+
+      try {
+        unlisten = await listen('start-session', () => {
+          openWizard();
+        });
+      } catch {
+        // If the event API isn't available yet, the localStorage fallback will still work.
+      }
+    };
+
+    init();
+
+    return () => {
+      if (unlisten) unlisten();
+    };
+  }, [windowLabel]);
 
   const handleSelectEntry = (date: string) => {
     setSelectedEntryDate(date);
@@ -118,14 +210,20 @@ function App() {
                 <div className="bottom-nav-left">
                   <button
                     className="bottom-nav-btn"
-                    onClick={() => setHistoryOpen(true)}
+                    onClick={() => {
+                      playSound();
+                      setHistoryOpen(true);
+                    }}
                     title="History"
                   >
                     <History size={16} />
                   </button>
                   <button
                     className="bottom-nav-btn"
-                    onClick={() => setView('settings')}
+                    onClick={() => {
+                      playSound();
+                      setView('settings');
+                    }}
                     title="Settings"
                   >
                     <SettingsIcon size={16} />
@@ -135,20 +233,32 @@ function App() {
                   <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                     <button
                       className="bottom-nav-btn"
-                      onClick={() => setZoomLevel((z) => Math.max(z - 0.1, 0.5))}
+                      onClick={() => {
+                        playSound();
+                        setZoomLevel((z) => Math.max(z - 0.1, 0.5));
+                      }}
                       title="Zoom Out"
                     >
                       <ZoomOut size={16} />
                     </button>
                     <button
                       className="bottom-nav-btn"
-                      onClick={() => setZoomLevel((z) => Math.min(z + 0.1, 2.0))}
+                      onClick={() => {
+                        playSound();
+                        setZoomLevel((z) => Math.min(z + 0.1, 2.0));
+                      }}
                       title="Zoom In"
                     >
                       <ZoomIn size={16} />
                     </button>
                   </div>
-                  <button className="theme-toggle" onClick={toggleTheme}>
+                  <button
+                    className="theme-toggle"
+                    onClick={() => {
+                      playSound();
+                      toggleTheme();
+                    }}
+                  >
                     {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
                   </button>
                 </div>

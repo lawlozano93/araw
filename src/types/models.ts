@@ -19,6 +19,16 @@ export interface JournalEntry {
   promptText: string;
   answerText: string;
   actions: ActionItem[];
+  /**
+   * True when this entry contains an in-progress draft marker (autosave).
+   * Used for UI hints and wizard resume.
+   */
+  inProgress?: boolean;
+  /**
+   * Draft stage encoded in the entry markdown marker.
+   * 5 = stream step, 6 = answer step.
+   */
+  draftStep?: number;
 }
 
 export interface ActionItem {

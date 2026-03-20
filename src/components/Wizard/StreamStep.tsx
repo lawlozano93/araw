@@ -47,6 +47,7 @@ export function StreamStep({ value, onChange, onDone }: StreamStepProps) {
 
     const handleClearTimer = (e: React.MouseEvent) => {
         e.stopPropagation();
+        playSound();
         if (autoStartTimeoutRef.current) {
             clearTimeout(autoStartTimeoutRef.current);
         }

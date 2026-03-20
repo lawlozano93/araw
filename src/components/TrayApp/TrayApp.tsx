@@ -2,13 +2,16 @@ import { useState, useRef, useEffect } from 'react';
 import { useSession, useActions, useTheme } from '../../hooks/useSession';
 import { loadPage, loadConfig } from '../../hooks/useStorage';
 import { invoke } from '@tauri-apps/api/core';
+import { emitTo } from '@tauri-apps/api/event';
 import { getCurrentWindow } from '@tauri-apps/api/window';
+import { useSound } from '../../hooks/useSound';
 import './TrayApp.css';
 
 export function TrayApp() {
     const { session, completedSteps, isComplete, updateSession } = useSession();
     const { actions, addAction, toggleAction } = useActions();
     const { theme: _theme } = useTheme(); // Sync theme
+    const playSound = useSound();
 
     // State for expanded sections and items
     const [expandedSection, setExpandedSection] = useState<'inputs' | 'actions' | null>('inputs');
@@ -41,6 +44,7 @@ export function TrayApp() {
 
     const handleOpenMain = async () => {
         try {
+            playSound();
             await invoke('show_main_window');
             await getCurrentWindow().hide();
         } catch (e) {
@@ -49,7 +53,18 @@ export function TrayApp() {
     };
 
     const handleStartSession = async () => {
-        await handleOpenMain();
+        // Used to switch the main view to the wizard when the main window opens.
+        localStorage.setItem('openWizardOnStart', 'true');
+        try {
+            playSound();
+            await invoke('show_main_window');
+            await emitTo('main', 'start-session', {});
+            await getCurrentWindow().hide();
+        } catch (e) {
+            console.error("Failed to start session", e);
+            // Fallback: at least open main window.
+            await handleOpenMain();
+        }
     };
 
     const handleAddAction = () => {
@@ -61,6 +76,7 @@ export function TrayApp() {
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
+            playSound();
             handleAddAction();
         }
     };
@@ -132,6 +148,7 @@ export function TrayApp() {
         if (e.key === ' ' || e.key === 'Enter') {
             e.preventDefault(); // Prevent scroll
             if (type === 'action' && id) {
+                playSound();
                 toggleAction(id);
             }
             if (type === 'input') {
@@ -145,6 +162,7 @@ export function TrayApp() {
                         'prompts': 'promptsReviewed'
                     };
                     if (map[id] && session) {
+                        playSound();
                         updateSession({ [map[id]]: !session[map[id] as keyof typeof session] });
                     }
                 } else {
@@ -185,15 +203,15 @@ export function TrayApp() {
 
             {/* INPUTS Section */}
             <div className="tray-section inputs-section">
-                <div
+                <button
+                    type="button"
                     className="section-header"
                     onClick={() => setExpandedSection(expandedSection === 'inputs' ? null : 'inputs')}
-                    tabIndex={0}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setExpandedSection(expandedSection === 'inputs' ? null : 'inputs') } }}
+                    aria-label="Toggle inputs section"
                 >
                     <div className="section-title">INPUTS</div>
                     <div className="section-meta">{inputsCompleted}/{inputsTotal}</div>
-                </div>
+                </button>
 
                 {expandedSection === 'inputs' && (
                     <div className="section-content">
@@ -201,9 +219,11 @@ export function TrayApp() {
                         <div className={`input-group ${expandedItem === 'goals' ? 'expanded' : ''}`}>
                             <div
                                 className={`input-item ${session?.readGoals ? 'done' : ''}`}
+                                role="button"
                                 onClick={() => toggleItem('goals')}
                                 tabIndex={0}
                                 onKeyDown={(e) => handleItemKeyDown(e, 'input', 'goals')}
+                                aria-label="Goals"
                             >
                                 <div className="input-checkbox" onClick={(e) => toggleSessionBool(e, 'readGoals')}>
                                     {session?.readGoals && '✓'}
@@ -222,9 +242,11 @@ export function TrayApp() {
                         <div className={`input-group ${expandedItem === 'affirmations' ? 'expanded' : ''}`}>
                             <div
                                 className={`input-item ${session?.readAffirmations ? 'done' : ''}`}
+                                role="button"
                                 onClick={() => toggleItem('affirmations')}
                                 tabIndex={0}
                                 onKeyDown={(e) => handleItemKeyDown(e, 'input', 'affirmations')}
+                                aria-label="Affirmations"
                             >
                                 <div className="input-checkbox" onClick={(e) => toggleSessionBool(e, 'readAffirmations')}>
                                     {session?.readAffirmations && '✓'}
@@ -243,9 +265,11 @@ export function TrayApp() {
                         <div className={`input-group ${expandedItem === 'visualizations' ? 'expanded' : ''}`}>
                             <div
                                 className={`input-item ${session?.readVisualizations ? 'done' : ''}`}
+                                role="button"
                                 onClick={() => toggleItem('visualizations')}
                                 tabIndex={0}
                                 onKeyDown={(e) => handleItemKeyDown(e, 'input', 'visualizations')}
+                                aria-label="Visualizations"
                             >
                                 <div className="input-checkbox" onClick={(e) => toggleSessionBool(e, 'readVisualizations')}>
                                     {session?.readVisualizations && '✓'}
@@ -265,6 +289,8 @@ export function TrayApp() {
                             onClick={handleStartSession}
                             tabIndex={0}
                             onKeyDown={(e) => handleItemKeyDown(e, 'input', 'prompts')}
+                            role="button"
+                            aria-label="Prompts: open app"
                         >
                             <div className="input-checkbox" onClick={(e) => toggleSessionBool(e, 'promptsReviewed')}>
                                 {session?.promptsReviewed && '✓'}
@@ -277,15 +303,15 @@ export function TrayApp() {
 
             {/* ACTIONS Section */}
             <div className="tray-section actions-section">
-                <div
+                <button
+                    type="button"
                     className="section-header"
                     onClick={() => setExpandedSection(expandedSection === 'actions' ? null : 'actions')}
-                    tabIndex={0}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setExpandedSection(expandedSection === 'actions' ? null : 'actions') } }}
+                    aria-label="Toggle today's actions section"
                 >
                     <div className="section-title">TODAY'S ACTIONS</div>
                     <div className="section-meta">{actionsCompleted}/{actions.length}</div>
-                </div>
+                </button>
 
                 {expandedSection === 'actions' && (
                     <div className="section-content">
@@ -293,9 +319,11 @@ export function TrayApp() {
                             <div
                                 key={action.id}
                                 className={`action-item ${action.done ? 'done' : ''}`}
+                                        role="button"
                                 onClick={() => toggleAction(action.id)}
                                 tabIndex={0}
                                 onKeyDown={(e) => handleItemKeyDown(e, 'action', action.id)}
+                                        aria-label={action.done ? `Completed action: ${action.text}` : `Incomplete action: ${action.text}`}
                             >
                                 <div className="action-checkbox">
                                     {action.done && '✓'}

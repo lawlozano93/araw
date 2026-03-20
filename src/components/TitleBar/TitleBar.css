@@ -4,8 +4,8 @@
   align-items: center;
   justify-content: center;
   padding: 0 12px;
-  background: var(--bg-primary);
-  border-bottom: 1px solid var(--border-color);
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
   user-select: none;
   -webkit-user-select: none;
   position: relative;
@@ -14,7 +14,7 @@
 .titlebar-title {
   font-size: 13px;
   font-weight: 400;
-  color: var(--text-secondary);
+  color: var(--muted-foreground);
   pointer-events: none;
 }
 
@@ -42,23 +42,32 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background: var(--text-tertiary);
-  color: transparent;
+  background: transparent;
+  color: #fff;
   transition: all 0.15s ease;
 }
 
-.titlebar-buttons:hover .titlebar-button {
-  color: rgba(0, 0, 0, 0.6);
+.titlebar-button:hover {
+  filter: brightness(1.05);
+  transform: translateY(-0.5px);
 }
 
 .titlebar-button.close {
   background: #ff5f57;
+  color: #fff;
 }
 
 .titlebar-button.minimize {
   background: #ffbd2e;
+  color: #fff;
 }
 
 .titlebar-button.maximize {
   background: #28c940;
+  color: #fff;
+}
+
+.titlebar-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }

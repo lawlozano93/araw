@@ -409,7 +409,9 @@ body,
   gap: 12px;
   padding: clamp(4px, 1vh, 8px) 0;
   /* Fluid padding */
+  background: transparent;
   border-bottom: none;
+  border: none;
   cursor: pointer;
 }
 
@@ -426,6 +428,9 @@ body,
   transition: opacity 0.2s, color 0.2s;
   padding: 4px;
   border-radius: 4px;
+  background: transparent;
+  border: none;
+  font: inherit;
 }
 
 .delete-btn:hover {

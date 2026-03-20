@@ -25,6 +25,14 @@
     color: var(--foreground);
 }
 
+.entry-in-progress {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--primary);
+    letter-spacing: 0.3px;
+}
+
 .entry-viewer-content {
     flex: 1;
     overflow-y: auto;

@@ -3,10 +3,16 @@ name: Release
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
-# Build desktop bundles and attach them to the GitHub release for the pushed tag.
+# One run per merge to main: build all platforms and create/update the GitHub release for the
+# version in package.json / Tauri config (tag v__VERSION__). No separate tag push needed — avoids
+# doubling with the PR "Build" workflow.
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+
+concurrency:
+  group: release-main
+  cancel-in-progress: true
 
 jobs:
   build:

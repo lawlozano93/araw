@@ -3,10 +3,8 @@ name: Build
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
-# Verify the app compiles on every PR and push to main (no release artifacts).
+# Compile check on PRs only. Pushes to main run the Release workflow (full build + assets) instead.
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

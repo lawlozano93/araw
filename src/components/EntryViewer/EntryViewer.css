@@ -1,11 +1,13 @@
 .entry-viewer {
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    padding: 60px 40px 40px;
-    max-width: 700px;
+    padding: clamp(24px, 5vh, 60px) clamp(16px, 4vw, 40px) clamp(48px, 8vh, 56px);
+    max-width: min(44rem, 100%);
     margin: 0 auto;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .entry-viewer-loading,
@@ -20,9 +22,11 @@
 }
 
 .entry-viewer-date {
-    font-size: 28px;
+    font-size: clamp(18px, 0.55rem + 2.2vmin, 28px);
     font-weight: 300;
     color: var(--foreground);
+    line-height: 1.25;
+    overflow-wrap: break-word;
 }
 
 .entry-in-progress {
@@ -35,7 +39,9 @@
 
 .entry-viewer-content {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .entry-section {
@@ -52,17 +58,20 @@
 }
 
 .entry-section-content {
-    font-size: 16px;
-    line-height: 1.8;
+    font-size: clamp(14px, 0.3rem + 1.2vmin, 17px);
+    line-height: 1.75;
     color: var(--foreground);
     white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .entry-prompt-text {
-    font-size: 15px;
+    font-size: clamp(13px, 0.25rem + 1.1vmin, 16px);
     font-style: italic;
     color: var(--muted-foreground);
     margin-bottom: 16px;
+    overflow-wrap: break-word;
 }
 
 .entry-actions {

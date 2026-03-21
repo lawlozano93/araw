@@ -10,9 +10,9 @@ import { Onboarding } from './components/Onboarding/Onboarding';
 import { Settings } from './components/Settings/Settings';
 import { useSession, useTheme, useActions } from './hooks/useSession';
 import { useWindowLabel } from './hooks/useWindowLabel';
-import { useSound } from './hooks/useSound';
+import { useSound, setSoundEnabledPreference } from './hooks/useSound';
 import { listen } from '@tauri-apps/api/event';
-import { getToday } from './hooks/useStorage';
+import { getToday, loadConfig } from './hooks/useStorage';
 import './App.css';
 
 type View = 'dashboard' | 'wizard' | 'entry' | 'settings';
@@ -24,6 +24,13 @@ function App() {
   const [zoomLevel, setZoomLevel] = useState(1);
   const playSound = useSound();
   const sessionRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (windowLabel !== 'main') return;
+    loadConfig()
+      .then((c) => setSoundEnabledPreference(c.soundEnabled !== false))
+      .catch(() => {});
+  }, [windowLabel]);
 
   // TEST MODE: Removed test date selector
 
@@ -209,6 +216,7 @@ function App() {
               <div className="bottom-nav">
                 <div className="bottom-nav-left">
                   <button
+                    type="button"
                     className="bottom-nav-btn"
                     onClick={() => {
                       playSound();
@@ -219,6 +227,7 @@ function App() {
                     <History size={16} />
                   </button>
                   <button
+                    type="button"
                     className="bottom-nav-btn"
                     onClick={() => {
                       playSound();
@@ -230,8 +239,9 @@ function App() {
                   </button>
                 </div>
                 <div className="bottom-nav-right">
-                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                  <div className="bottom-nav-zoom">
                     <button
+                      type="button"
                       className="bottom-nav-btn"
                       onClick={() => {
                         playSound();
@@ -242,6 +252,7 @@ function App() {
                       <ZoomOut size={16} />
                     </button>
                     <button
+                      type="button"
                       className="bottom-nav-btn"
                       onClick={() => {
                         playSound();
@@ -253,6 +264,7 @@ function App() {
                     </button>
                   </div>
                   <button
+                    type="button"
                     className="theme-toggle"
                     onClick={() => {
                       playSound();

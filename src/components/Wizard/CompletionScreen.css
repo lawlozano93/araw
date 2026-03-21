@@ -17,26 +17,32 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: clamp(10px, 2vh, 16px);
+    padding: clamp(16px, 4vw, 32px);
+    max-width: min(28rem, 100%);
+    box-sizing: border-box;
     animation: completionScaleUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 .completion-icon {
-    font-size: 64px;
+    font-size: clamp(36px, 8vmin, 64px);
+    line-height: 1;
     animation: spin 3s linear infinite;
 }
 
 .completion-content h1 {
-    font-size: 32px;
+    font-size: clamp(20px, 0.65rem + 2.5vmin, 32px);
     font-weight: 400;
     color: var(--foreground);
     margin: 0;
+    line-height: 1.2;
 }
 
 .completion-content p {
-    font-size: 18px;
+    font-size: clamp(14px, 0.35rem + 1.2vmin, 18px);
     color: var(--muted-foreground);
     margin: 0;
+    line-height: 1.45;
 }
 
 @keyframes completionFadeIn {

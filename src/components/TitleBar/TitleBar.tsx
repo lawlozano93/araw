@@ -3,11 +3,7 @@ import { Minus, X, Maximize2 } from 'lucide-react';
 import { useSound } from '../../hooks/useSound';
 import './TitleBar.css';
 
-interface TitleBarProps {
-    title?: string;
-}
-
-export function TitleBar({ title = 'Araw' }: TitleBarProps) {
+export function TitleBar() {
     const appWindow = getCurrentWindow();
     const playSound = useSound();
 
@@ -30,19 +26,34 @@ export function TitleBar({ title = 'Araw' }: TitleBarProps) {
     };
 
     return (
-        <div className="titlebar" data-tauri-drag-region>
-            <div className="titlebar-title titlebar-logo">{title}</div>
-            <div className="titlebar-buttons">
-                <button className="titlebar-button close" onClick={handleClose} aria-label="Close">
-                    <X size={10} />
+        <div className="titlebar">
+            <div className="titlebar-leading">
+                <button
+                    type="button"
+                    className="titlebar-button close"
+                    onClick={handleClose}
+                    aria-label="Close"
+                >
+                    <X size={9} strokeWidth={2.75} aria-hidden />
                 </button>
-                <button className="titlebar-button minimize" onClick={handleMinimize} aria-label="Minimize">
-                    <Minus size={10} />
+                <button
+                    type="button"
+                    className="titlebar-button minimize"
+                    onClick={handleMinimize}
+                    aria-label="Minimize"
+                >
+                    <Minus size={9} strokeWidth={2.75} aria-hidden />
                 </button>
-                <button className="titlebar-button maximize" onClick={handleMaximize} aria-label="Maximize">
-                    <Maximize2 size={10} />
+                <button
+                    type="button"
+                    className="titlebar-button maximize"
+                    onClick={handleMaximize}
+                    aria-label="Zoom"
+                >
+                    <Maximize2 size={8} strokeWidth={2.75} aria-hidden />
                 </button>
             </div>
+            <div className="titlebar-drag" data-tauri-drag-region aria-hidden="true" />
         </div>
     );
 }

@@ -113,7 +113,7 @@ export function HistorySidebar({ isOpen, onClose, onSelectEntry }: HistorySideba
         <div className="history-sidebar">
             <div className="history-header">
                 <span>History ↗</span>
-                    <button className="history-close" onClick={() => { playSound(); onClose(); }}>×</button>
+                    <button type="button" className="history-close" onClick={() => { playSound(); onClose(); }} aria-label="Close history">×</button>
             </div>
 
             {/* Mini Calendar */}

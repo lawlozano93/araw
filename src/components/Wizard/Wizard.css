@@ -1,5 +1,6 @@
 .wizard {
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
 }
@@ -36,6 +37,7 @@
 
 .wizard-content {
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -52,23 +54,47 @@
     cursor: pointer;
 }
 
-/* Reading step */
+/* Reading step — fills wizard height; text scales with window; long content scrolls */
 .reading-step {
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
+    overflow: hidden;
+    padding: clamp(10px, 2.5vh, 28px) clamp(12px, 4vw, 40px) 0;
     text-align: center;
 }
 
+.reading-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
+
+/* min-height: 100% keeps short copy vertically centered; tall copy grows and scrolls */
+.reading-scroll-inner {
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-block: clamp(8px, 2vh, 20px);
+    /* Space for fixed progress dots + Done Reading (wizard-step-footer) */
+    padding-bottom: clamp(72px, 12vh, 120px);
+    box-sizing: border-box;
+}
+
 .reading-content {
-    max-width: 500px;
-    font-size: 20px;
-    line-height: 1.8;
+    width: 100%;
+    max-width: min(34rem, 100%);
+    margin-inline: auto;
+    font-size: clamp(14px, 0.35rem + 1.85vmin, 22px);
+    line-height: 1.65;
     color: var(--foreground);
     white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .reading-done {
@@ -85,29 +111,35 @@
 /* Stream step */
 .stream-step {
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .stream-editor {
     flex: 1;
+    min-height: 0;
     display: flex;
-    justify-content: center;
-    padding: 60px 40px 0;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(20px, 5vh, 56px) clamp(16px, 4vw, 40px) clamp(80px, 13vh, 112px);
 }
 
 .stream-textarea {
+    flex: 1;
+    min-height: 0;
     width: 100%;
-    max-width: 650px;
-    height: 100%;
+    max-width: min(40rem, 100%);
     border: none;
     outline: none;
     resize: none;
     font-family: 'Lato', sans-serif;
-    font-size: 18px;
-    line-height: 1.8;
+    font-size: clamp(15px, 0.3rem + 1.55vmin, 20px);
+    line-height: 1.75;
     color: var(--foreground);
     background: transparent;
+    overflow-wrap: break-word;
 }
 
 .stream-textarea::placeholder {
@@ -138,21 +170,23 @@
 /* Prompts step */
 .prompts-step {
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 60px 40px;
+    padding: clamp(24px, 5vh, 60px) clamp(16px, 4vw, 40px) clamp(24px, 4vh, 48px);
     overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .prompts-title {
-    font-size: 14px;
+    font-size: clamp(12px, 0.2rem + 1.1vmin, 14px);
     color: var(--muted-foreground);
-    margin-bottom: 32px;
+    margin-bottom: clamp(20px, 3vh, 32px);
 }
 
 .prompts-list {
-    max-width: 500px;
+    max-width: min(31rem, 100%);
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -177,9 +211,11 @@
 }
 
 .prompt-text {
-    font-size: 15px;
+    font-size: clamp(13px, 0.25rem + 1.2vmin, 16px);
     line-height: 1.5;
     color: var(--foreground);
+    text-align: start;
+    overflow-wrap: break-word;
 }
 
 .prompt-tags {
@@ -208,10 +244,32 @@
 /* Answer step */
 .answer-step {
     flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.answer-step-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
+
+.answer-step-inner {
+    min-height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: clamp(12px, 3vh, 32px) clamp(14px, 4vw, 40px) clamp(80px, 12vh, 120px);
+    box-sizing: border-box;
+}
+
+.answer-step-inner .prompts-single-question {
+    margin-bottom: clamp(20px, 3vh, 32px);
 }
 
 .answer-prompt {
@@ -343,13 +401,47 @@
 }
 
 .prompts-single-question {
-    font-size: 26px;
+    font-size: clamp(17px, 0.5rem + 2.4vmin, 28px);
     font-weight: 400;
     text-align: center;
     color: var(--foreground);
-    max-width: 600px;
+    max-width: min(37.5rem, 100%);
+    width: 100%;
     line-height: 1.4;
     margin: 0 auto;
+    padding-inline: clamp(4px, 1vw, 12px);
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+.main-answer-input {
+    width: 100%;
+    max-width: min(37.5rem, 100%);
+    margin-inline: auto;
+    padding: clamp(12px, 2vh, 20px) 0;
+    font-size: clamp(17px, 0.45rem + 2vmin, 26px);
+    border: none;
+    border-bottom: 2px solid var(--border);
+    background: transparent;
+    color: var(--foreground);
+    text-align: center;
+    outline: none;
+    margin-bottom: clamp(24px, 4vh, 40px);
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.main-answer-input::placeholder {
+    color: var(--muted-foreground);
+    opacity: 0.45;
+}
+
+.answer-section {
+    width: 100%;
+    max-width: min(37.5rem, 100%);
+    margin-inline: auto;
+    padding-inline: clamp(4px, 1vw, 8px);
+    box-sizing: border-box;
 }
 
 /* Timer styles in StreamStep */

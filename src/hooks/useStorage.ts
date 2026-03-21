@@ -58,6 +58,7 @@ export async function loadConfig(): Promise<AppConfig> {
             lastSessionDate: '',
             sessions: {},
             onboardingComplete: false,
+            soundEnabled: true,
         };
         await saveConfig(defaultConfig);
         return defaultConfig;

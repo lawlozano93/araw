@@ -52,18 +52,17 @@ export function Settings({ onBack }: SettingsProps) {
     };
 
     return (
-        <div className="settings-container" style={{ position: 'relative' }}>
+        <div className="settings-container">
             {showToast && (
                 <div className="settings-toast">
                     Settings saved successfully
                 </div>
             )}
             <div className="settings-header">
-                <button className="back-btn" onClick={() => { playSound(); onBack(); }}>
-                    <ArrowLeft size={16} /> Back
+                <button type="button" className="back-btn" onClick={() => { playSound(); onBack(); }}>
+                    <ArrowLeft size={16} aria-hidden /> Back
                 </button>
                 <h2>Settings</h2>
-                <div style={{ width: '60px' }}></div> {/* Spacer for alignment */}
             </div>
 
             <div className="settings-tabs">
@@ -102,11 +101,15 @@ export function Settings({ onBack }: SettingsProps) {
 
             <div className="settings-content">
                 {activeTab === 'vault' ? (
-                    <VaultSettings />
+                    <div className="settings-panel-scroll">
+                        <VaultSettings />
+                    </div>
                 ) : activeTab === 'shortcuts' ? (
-                    <Shortcuts />
+                    <div className="settings-panel-scroll">
+                        <Shortcuts />
+                    </div>
                 ) : loading ? (
-                    <div className="loading-spinner">Loading...</div>
+                    <div className="settings-loading">Loading...</div>
                 ) : (
                     <SmartTextarea
                         className="settings-textarea"

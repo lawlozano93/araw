@@ -1,12 +1,14 @@
 .onboarding-container {
     height: 100vh;
     width: 100%;
+    min-height: 0;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     background: var(--background);
-    padding: 48px 40px 80px;
+    padding: clamp(20px, 4vh, 48px) clamp(16px, 4vw, 40px) clamp(64px, 12vh, 88px);
     /* bottom padding leaves space for fixed footer + dots */
+    box-sizing: border-box;
 }
 
 .onboarding-card {
@@ -43,7 +45,7 @@
 
 /* ---- Header ---- */
 .onboarding-header h1 {
-    font-size: 30px;
+    font-size: clamp(20px, 0.6rem + 2.8vmin, 32px);
     font-weight: 400;
     color: var(--foreground);
     margin-bottom: 12px;
@@ -53,15 +55,15 @@
 
 .onboarding-logo {
     font-family: 'Patrick Hand', cursive;
-    font-size: 52px;
+    font-size: clamp(28px, 1rem + 5vmin, 52px);
     font-weight: 400;
-    letter-spacing: 4px;
+    letter-spacing: clamp(1px, 0.5vw, 4px);
     text-transform: lowercase;
 }
 
 .onboarding-header p {
     color: var(--muted-foreground);
-    font-size: 16px;
+    font-size: clamp(14px, 0.35rem + 1.2vmin, 17px);
     line-height: 1.6;
     margin-bottom: 8px;
 }
@@ -74,7 +76,7 @@
 }
 
 .onboarding-body p {
-    font-size: 16px;
+    font-size: clamp(14px, 0.35rem + 1.1vmin, 17px);
     line-height: 1.6;
     color: var(--muted-foreground);
 }
@@ -90,11 +92,12 @@
 }
 
 .onboarding-list li {
-    font-size: 15px;
+    font-size: clamp(13px, 0.3rem + 1vmin, 16px);
     line-height: 1.5;
     color: var(--foreground);
     padding-left: 20px;
     position: relative;
+    overflow-wrap: break-word;
 }
 
 .onboarding-list li::before {
@@ -122,19 +125,21 @@
 .onboarding-textarea {
     flex: 1;
     width: 100%;
+    min-height: 0;
     background: transparent;
     color: var(--foreground);
     border: none;
     border-bottom: 1px solid var(--border);
     padding: 0 0 8px 0;
     font-family: inherit;
-    font-size: 20px;
+    font-size: clamp(15px, 0.4rem + 1.6vmin, 21px);
     resize: none;
     line-height: 1.6;
     outline: none;
     transition: border-color 0.2s;
     caret-color: var(--primary);
-    min-height: 120px;
+    min-height: min(120px, 28vh);
+    overflow-wrap: break-word;
 }
 
 .onboarding-textarea:focus {

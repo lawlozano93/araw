@@ -13,8 +13,12 @@ export function ReadingStep({ title: _title, content, onDone }: ReadingStepProps
 
     return (
         <div className="reading-step">
-            <div className="reading-content">
-                {cleanContent}
+            <div className="reading-scroll">
+                <div className="reading-scroll-inner">
+                    <div className="reading-content">
+                        {cleanContent}
+                    </div>
+                </div>
             </div>
             <div className="wizard-step-footer">
                 <button onClick={onDone}>

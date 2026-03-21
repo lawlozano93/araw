@@ -1,28 +1,29 @@
 .shortcuts {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 8px 0;
+  gap: clamp(14px, 2.5vh, 20px);
+  padding: clamp(4px, 1vh, 10px) 0 clamp(8px, 2vh, 16px);
 }
 
 .shortcuts-title {
-  font-size: 18px;
+  font-size: clamp(16px, 0.45rem + 1.6vmin, 20px);
   font-weight: 400;
   color: var(--foreground);
+  line-height: 1.25;
 }
 
 .shortcuts-section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 14px 16px;
+  gap: clamp(8px, 1.5vh, 12px);
+  padding: clamp(12px, 2vh, 16px) clamp(12px, 3vw, 18px);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--input);
 }
 
 .shortcuts-section-title {
-  font-size: 12px;
+  font-size: clamp(10px, 0.15rem + 0.9vmin, 12px);
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -31,19 +32,60 @@
 
 .shortcut-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 10px;
+  gap: 6px 12px;
 }
 
 .shortcut-key {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: clamp(11px, 0.22rem + 0.9vmin, 13px);
   color: var(--primary);
-  min-width: 88px;
+  flex: 0 0 auto;
+  min-width: min(7.5rem, 38%);
+  padding: 2px 0;
 }
 
 .shortcut-desc {
-  font-size: 13px;
+  flex: 1 1 12rem;
+  min-width: 0;
+  font-size: clamp(12px, 0.28rem + 1vmin, 14px);
+  line-height: 1.45;
   color: var(--foreground);
+}
+
+.sound-pref-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 20rem;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: clamp(13px, 0.3rem + 1vmin, 15px);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.sound-pref-toggle:hover {
+  border-color: var(--primary);
+  background: var(--accent);
+}
+
+.sound-pref-toggle:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.sound-pref-hint {
+  margin: 0;
+  font-size: clamp(11px, 0.22rem + 0.9vmin, 13px);
+  line-height: 1.45;
+  color: var(--muted-foreground);
 }
 

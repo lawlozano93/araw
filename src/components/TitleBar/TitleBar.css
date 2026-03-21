@@ -1,73 +1,81 @@
 .titlebar {
   height: 32px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 12px;
+  align-items: stretch;
+  padding: 0 clamp(10px, 2vw, 14px);
   background: var(--background);
-  border-bottom: 1px solid var(--border);
+  border-bottom: none;
   user-select: none;
   -webkit-user-select: none;
-  position: relative;
+  box-sizing: border-box;
 }
 
-.titlebar-title {
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--muted-foreground);
-  pointer-events: none;
-}
-
-.titlebar-logo {
-  font-family: 'Patrick Hand', cursive;
-  font-size: 22px;
-  font-weight: 400;
-  letter-spacing: 3px;
-  text-transform: lowercase;
-}
-
-.titlebar-buttons {
-  position: absolute;
-  left: 12px;
+.titlebar-leading {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  -webkit-app-region: no-drag;
 }
 
+/* Draggable empty strip — window can be moved from here */
+.titlebar-drag {
+  flex: 1;
+  min-width: 0;
+  min-height: 100%;
+  -webkit-app-region: drag;
+}
+
+/* Traffic lights — glyphs only on hover / focus (macOS-style) */
 .titlebar-button {
   width: 12px;
   height: 12px;
+  min-width: 12px;
+  min-height: 12px;
   border-radius: 50%;
   border: none;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background: transparent;
-  color: #fff;
-  transition: all 0.15s ease;
+  flex-shrink: 0;
+  transition: filter 0.12s ease, transform 0.12s ease;
 }
 
-.titlebar-button:hover {
-  filter: brightness(1.05);
-  transform: translateY(-0.5px);
+.titlebar-button svg {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  color: rgba(30, 30, 30, 0.5);
+}
+
+[data-theme="dark"] .titlebar-button svg {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.titlebar-button:hover,
+.titlebar-button:focus-visible {
+  filter: brightness(1.06);
+}
+
+.titlebar-button:hover svg,
+.titlebar-button:focus-visible svg {
+  opacity: 1;
 }
 
 .titlebar-button.close {
   background: #ff5f57;
-  color: #fff;
 }
 
 .titlebar-button.minimize {
   background: #ffbd2e;
-  color: #fff;
 }
 
 .titlebar-button.maximize {
   background: #28c940;
-  color: #fff;
 }
 
 .titlebar-button:focus-visible {
-  outline: 2px solid var(--primary);
+  outline: 2px solid var(--ring);
   outline-offset: 2px;
 }

@@ -62,4 +62,6 @@ export interface AppConfig {
   sessions: Record<string, DailySession>;
   onboardingComplete: boolean;
   vaultPath?: string; // Custom data directory (default: ~/Documents/Araw)
+  /** When false, UI click sounds are disabled. Omitted in older configs = enabled. */
+  soundEnabled?: boolean;
 }

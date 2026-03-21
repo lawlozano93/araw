@@ -96,27 +96,23 @@ export function VaultSettings() {
             </div>
 
             <div className="vault-actions">
-                <button className="vault-btn" onClick={handleChangeLocation}>
-                    <FolderOpen size={14} />
+                <button type="button" className="vault-btn" onClick={handleChangeLocation}>
+                    <FolderOpen size={14} aria-hidden />
                     Change Vault Location
                 </button>
 
-                <button className="vault-btn" onClick={handleOpenInExplorer}>
-                    <ExternalLink size={14} />
+                <button type="button" className="vault-btn" onClick={handleOpenInExplorer}>
+                    <ExternalLink size={14} aria-hidden />
                     {explorerLabel}
                 </button>
             </div>
 
-            <div style={{ marginTop: '24px', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
-                <div className="vault-label" style={{ color: 'var(--destructive)', marginBottom: '8px' }}>Danger Zone</div>
-                <div className="vault-info" style={{ marginBottom: '16px' }}>
+            <div className="vault-danger-zone">
+                <div className="vault-label vault-danger-label">Danger Zone</div>
+                <div className="vault-info vault-danger-copy">
                     Resetting data will completely delete all journal entries, settings, and habits.
                 </div>
-                <button
-                    className="vault-btn"
-                    onClick={handleResetData}
-                    style={{ borderColor: 'var(--destructive)', color: 'var(--destructive)' }}
-                >
+                <button type="button" className="vault-btn vault-btn--danger" onClick={handleResetData}>
                     Reset App Data
                 </button>
             </div>

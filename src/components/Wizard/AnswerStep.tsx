@@ -22,36 +22,28 @@ export function AnswerStep({
 
     return (
         <div className="answer-step">
-            <div className="prompts-single-question" style={{ marginBottom: '32px' }}>
-                {prompt?.text || 'What is the ONE most important thing I must do today?'}
-            </div>
+            <div className="answer-step-scroll">
+                <div className="answer-step-inner">
+                    <div className="prompts-single-question">
+                        {prompt?.text || 'What is the ONE most important thing I must do today?'}
+                    </div>
 
-            <div className="answer-section" style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-                <input
-                    ref={inputRef}
-                    type="text"
-                    className="main-answer-input"
-                    value={mainAnswer}
-                    onChange={(e) => onMainAnswerChange(e.target.value)}
-                    placeholder="Type here..."
-                    style={{
-                        width: '100%',
-                        padding: '20px 0',
-                        fontSize: '24px',
-                        border: 'none',
-                        borderBottom: '2px solid var(--border)',
-                        background: 'transparent',
-                        color: 'var(--foreground)',
-                        textAlign: 'center',
-                        outline: 'none',
-                        marginBottom: '40px'
-                    }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' && mainAnswer.trim()) {
-                            onDone();
-                        }
-                    }}
-                />
+                    <div className="answer-section">
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            className="main-answer-input"
+                            value={mainAnswer}
+                            onChange={(e) => onMainAnswerChange(e.target.value)}
+                            placeholder="Type here..."
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && mainAnswer.trim()) {
+                                    onDone();
+                                }
+                            }}
+                        />
+                    </div>
+                </div>
             </div>
 
             <div className="wizard-step-footer">

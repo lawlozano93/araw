@@ -217,7 +217,7 @@ function formatEntryMarkdown(entry: JournalEntry): string {
     let md = `# ${dateFormatted}\n\n`;
 
     if (shouldMarkDraft) {
-        md += `<!-- ARAW_DRAFT step=${draftStep ?? 5} -->\n\n`;
+        md += `<!-- ARAW_DRAFT step=${draftStep ?? 4} -->\n\n`;
     }
 
     if (entry.streamText) {

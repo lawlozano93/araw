@@ -52,7 +52,6 @@ export function StreamStep({ value, onChange, onDone }: StreamStepProps) {
             clearTimeout(autoStartTimeoutRef.current);
         }
         timer.reset();
-        setIsTimerVisible(false);
     };
 
     useEffect(() => {
@@ -85,7 +84,15 @@ export function StreamStep({ value, onChange, onDone }: StreamStepProps) {
                         ) : (
                             <>
                                 <span className="timer-display">{timer.displayTime}</span>
-                                <button className="timer-clear" onClick={handleClearTimer} title="Clear timer">×</button>
+                                <button
+                                    type="button"
+                                    className="timer-clear"
+                                    onClick={handleClearTimer}
+                                    title="Reset timer"
+                                    aria-label="Reset timer"
+                                >
+                                    ×
+                                </button>
                             </>
                         )}
                     </div>

@@ -26,7 +26,7 @@ export interface JournalEntry {
   inProgress?: boolean;
   /**
    * Draft stage encoded in the entry markdown marker.
-   * 5 = stream step, 6 = answer step.
+   * New: 4 = stream, 5 = answer. Legacy files may still use 5 = stream, 6 = answer.
    */
   draftStep?: number;
 }
@@ -47,13 +47,24 @@ export interface Prompt {
   isFavorite: boolean;
 }
 
+/** Single daily focus question (stream → answer flow; persisted as `promptText`). */
+export const FOCUS_DAILY_QUESTION =
+  'What is the ONE most important thing I must do today to move closer to what I want?';
+
+export const FOCUS_PROMPT: Prompt = {
+  id: 'focus-daily',
+  text: FOCUS_DAILY_QUESTION,
+  tags: ['focus'],
+  isFavorite: true,
+};
+
 export interface FrontalPage {
   type: 'goals' | 'affirmations' | 'visualizations';
   content: string;
   lastModified: string;
 }
 
-export type WizardStep = 1 | 2 | 3 | 4 | 5 | 6;
+export type WizardStep = 1 | 2 | 3 | 4 | 5;
 
 export interface AppConfig {
   theme: 'light' | 'dark';

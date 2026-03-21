@@ -64,7 +64,8 @@ export function useTimer(initialMinutes: number = 25, options?: UseTimerOptions)
     const reset = useCallback(() => {
         setState('idle');
         setElapsedSeconds(0);
-    }, []);
+        setTotalSeconds(initialMinutes * 60);
+    }, [initialMinutes]);
 
     const toggle = useCallback(() => {
         if (state === 'running') {

@@ -1,15 +1,13 @@
 import { useRef, useEffect } from 'react';
-import type { Prompt } from '../../types/models';
+import { FOCUS_DAILY_QUESTION } from '../../types/models';
 
 interface AnswerStepProps {
-    prompt: Prompt | null;
     mainAnswer: string;
     onMainAnswerChange: (text: string) => void;
     onDone: () => void;
 }
 
 export function AnswerStep({
-    prompt,
     mainAnswer,
     onMainAnswerChange,
     onDone
@@ -25,7 +23,7 @@ export function AnswerStep({
             <div className="answer-step-scroll">
                 <div className="answer-step-inner">
                     <div className="prompts-single-question">
-                        {prompt?.text || 'What is the ONE most important thing I must do today?'}
+                        {FOCUS_DAILY_QUESTION}
                     </div>
 
                     <div className="answer-section">
@@ -47,7 +45,7 @@ export function AnswerStep({
             </div>
 
             <div className="wizard-step-footer">
-                <button onClick={onDone} disabled={!mainAnswer.trim()}>
+                <button type="button" onClick={onDone} disabled={!mainAnswer.trim()}>
                     Complete Session
                 </button>
             </div>

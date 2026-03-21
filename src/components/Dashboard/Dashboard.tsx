@@ -31,7 +31,7 @@ export function Dashboard({ onStartSession, session, actions, onToggleAction, on
         return 'Good evening';
     };
 
-    const displayDate = new Date().toLocaleDateString('en-US', {
+    const displayDate = new Date().toLocaleDateString(undefined, {
         weekday: 'long',
         month: 'long',
         day: 'numeric'
@@ -95,6 +95,7 @@ export function Dashboard({ onStartSession, session, actions, onToggleAction, on
                         }
                     </p>
                     <button
+                        type="button"
                         className="start-btn"
                         onClick={() => {
                             playSound();

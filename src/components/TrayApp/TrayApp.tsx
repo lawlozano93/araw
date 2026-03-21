@@ -85,7 +85,7 @@ export function TrayApp() {
         setExpandedItem(expandedItem === item ? null : item);
     };
 
-    const toggleSessionBool = (e: React.MouseEvent, key: 'readGoals' | 'readAffirmations' | 'readVisualizations' | 'promptsReviewed') => {
+    const toggleSessionBool = (e: React.MouseEvent, key: 'readGoals' | 'readAffirmations' | 'readVisualizations') => {
         e.stopPropagation();
         if (session) {
             updateSession({ [key]: !session[key] });
@@ -93,11 +93,10 @@ export function TrayApp() {
     };
 
     // Inputs progress
-    const inputsTotal = 4;
+    const inputsTotal = 3;
     const inputsCompleted = (session?.readGoals ? 1 : 0) +
         (session?.readAffirmations ? 1 : 0) +
-        (session?.readVisualizations ? 1 : 0) +
-        (session?.promptsReviewed ? 1 : 0);
+        (session?.readVisualizations ? 1 : 0);
 
     const actionsCompleted = actions.filter(a => a.done).length;
 
@@ -155,20 +154,17 @@ export function TrayApp() {
                 // Space toggles checkbox, Enter toggles expansion (default click on row does expansion)
                 if (e.key === ' ' && id) {
                     // Map string id to session key
-                    const map: Record<string, any> = {
-                        'goals': 'readGoals',
-                        'affirmations': 'readAffirmations',
-                        'visualizations': 'readVisualizations',
-                        'prompts': 'promptsReviewed'
+                    const map: Record<string, 'readGoals' | 'readAffirmations' | 'readVisualizations'> = {
+                        goals: 'readGoals',
+                        affirmations: 'readAffirmations',
+                        visualizations: 'readVisualizations',
                     };
                     if (map[id] && session) {
                         playSound();
                         updateSession({ [map[id]]: !session[map[id] as keyof typeof session] });
                     }
                 } else {
-                    // Enter -> Expand
-                    if (id && id !== 'prompts') toggleItem(id);
-                    if (id === 'prompts') handleStartSession();
+                    if (id) toggleItem(id);
                 }
             }
         }
@@ -282,20 +278,6 @@ export function TrayApp() {
                                     {visualizations || <span className="empty-text">No visualizations set yet.</span>}
                                 </div>
                             )}
-                        </div>
-
-                        <div
-                            className={`input-item ${session?.promptsReviewed ? 'done' : ''}`}
-                            onClick={handleStartSession}
-                            tabIndex={0}
-                            onKeyDown={(e) => handleItemKeyDown(e, 'input', 'prompts')}
-                            role="button"
-                            aria-label="Prompts: open app"
-                        >
-                            <div className="input-checkbox" onClick={(e) => toggleSessionBool(e, 'promptsReviewed')}>
-                                {session?.promptsReviewed && '✓'}
-                            </div>
-                            <div className="input-label">Prompts → Open App</div>
                         </div>
                     </div>
                 )}

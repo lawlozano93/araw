@@ -91,13 +91,12 @@ export function useSession(dateOverride?: string) {
         session.readGoals,
         session.readAffirmations,
         session.readVisualizations,
-        session.promptsReviewed,
         session.streamDone,
         session.promptAnswered,
     ].filter(Boolean).length : 0;
 
     const currentStep = completedSteps + 1;
-    const isComplete = completedSteps === 6;
+    const isComplete = completedSteps === 5;
 
     return { session, loading, updateSession, completedSteps, currentStep, isComplete, onboardingComplete, completeOnboarding };
 }

@@ -223,8 +223,9 @@ function App() {
                       setHistoryOpen(true);
                     }}
                     title="History"
+                    aria-label="Open journal history"
                   >
-                    <History size={16} />
+                    <History size={16} aria-hidden />
                   </button>
                   <button
                     type="button"
@@ -234,8 +235,9 @@ function App() {
                       setView('settings');
                     }}
                     title="Settings"
+                    aria-label="Open settings"
                   >
-                    <SettingsIcon size={16} />
+                    <SettingsIcon size={16} aria-hidden />
                   </button>
                 </div>
                 <div className="bottom-nav-right">
@@ -248,8 +250,9 @@ function App() {
                         setZoomLevel((z) => Math.max(z - 0.1, 0.5));
                       }}
                       title="Zoom Out"
+                      aria-label="Zoom out"
                     >
-                      <ZoomOut size={16} />
+                      <ZoomOut size={16} aria-hidden />
                     </button>
                     <button
                       type="button"
@@ -259,8 +262,9 @@ function App() {
                         setZoomLevel((z) => Math.min(z + 0.1, 2.0));
                       }}
                       title="Zoom In"
+                      aria-label="Zoom in"
                     >
-                      <ZoomIn size={16} />
+                      <ZoomIn size={16} aria-hidden />
                     </button>
                   </div>
                   <button
@@ -270,8 +274,14 @@ function App() {
                       playSound();
                       toggleTheme();
                     }}
+                    aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+                    aria-pressed={theme === 'dark'}
                   >
-                    {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+                    {theme === 'light' ? (
+                      <Moon size={16} aria-hidden />
+                    ) : (
+                      <Sun size={16} aria-hidden />
+                    )}
                   </button>
                 </div>
               </div>

@@ -1,14 +1,12 @@
-import { useState, useEffect } from 'react';
-import type { WizardStep, DailySession, Prompt } from '../../types/models';
-import { loadPage, saveEntry, loadEntry, loadPrompts, loadConfig, saveConfig, getToday } from '../../hooks/useStorage';
+import { useState, useEffect, useRef } from 'react';
+import { type WizardStep, type DailySession, FOCUS_PROMPT } from '../../types/models';
+import { loadPage, saveEntry, loadEntry, loadConfig, saveConfig, getToday } from '../../hooks/useStorage';
 import { useSound } from '../../hooks/useSound';
 import { ReadingStep } from './ReadingStep';
 import { StreamStep } from './StreamStep';
 import { AnswerStep } from './AnswerStep';
-import { PromptStep } from './PromptStep';
 import { CompletionScreen } from './CompletionScreen';
 import './Wizard.css';
-import { useRef } from 'react';
 
 interface WizardProps {
     session: DailySession;
@@ -17,21 +15,12 @@ interface WizardProps {
     onBack: () => void;
 }
 
-const FOCUS_PROMPT: Prompt = {
-    id: 'focus-daily',
-    text: 'What is the ONE most important thing I must do today to move closer to what I want?',
-    tags: ['focus'],
-    isFavorite: true
-};
-
 export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardProps) {
     const playSound = useSound();
     const [step, setStep] = useState<WizardStep>(1);
     const [goalsContent, setGoalsContent] = useState('');
     const [affirmationsContent, setAffirmationsContent] = useState('');
     const [visualizationsContent, setVisualizationsContent] = useState('');
-    const [prompts, setPrompts] = useState<Prompt[]>([FOCUS_PROMPT]);
-    const [selectedPrompt, setSelectedPrompt] = useState<Prompt>(FOCUS_PROMPT);
     const [streamText, setStreamText] = useState('');
     const [answerText, setAnswerText] = useState('');
     const [showCompletion, setShowCompletion] = useState(false);
@@ -40,9 +29,9 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
 
     // Determine starting step based on session state
     useEffect(() => {
-        if (session.promptAnswered) setStep(6);
-        else if (session.streamDone) setStep(6);
-        else if (session.promptsReviewed) setStep(5);
+        if (session.promptAnswered) setStep(5);
+        else if (session.streamDone) setStep(5);
+        else if (session.promptsReviewed && !session.streamDone) setStep(4);
         else if (session.readVisualizations) setStep(4);
         else if (session.readAffirmations) setStep(3);
         else if (session.readGoals) setStep(2);
@@ -56,20 +45,6 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
         loadPage('visualizations').then(setVisualizationsContent).catch(() => setVisualizationsContent('# Visualizations\n\nImagine yourself one year from now...'));
     }, []);
 
-    // Load prompts once (source of truth for Step 4).
-    useEffect(() => {
-        loadPrompts()
-            .then(setPrompts)
-            .catch(() => setPrompts([FOCUS_PROMPT]));
-    }, []);
-
-    // Restore prompt selection from session (if present).
-    useEffect(() => {
-        if (!session.selectedPromptId) return;
-        const match = prompts.find(p => p.id === session.selectedPromptId);
-        if (match) setSelectedPrompt(match);
-    }, [session.selectedPromptId, prompts]);
-
     // Load existing entry data (including drafts) if resuming.
     useEffect(() => {
         loadEntry(session.date).then(entry => {
@@ -78,35 +53,26 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
             if (entry.streamText) setStreamText(entry.streamText);
             if (entry.answerText) setAnswerText(entry.answerText);
 
-            // Also try to find main action text if answerText is empty but action exists.
             if (!entry.answerText && entry.actions) {
                 const main = entry.actions.find(a => a.isMain);
                 if (main) setAnswerText(main.text);
             }
 
-            // If we find an autosaved draft, override step so the wizard can resume.
-            if (entry.inProgress) {
-                if (entry.draftStep === 6 && !session.promptAnswered) setStep(6);
-                if (entry.draftStep === 5 && !session.streamDone && !session.promptAnswered) setStep(5);
-
-                // For draft step 5/6, restore the prompt text even if session flags didn't persist.
-                if (entry.promptText && entry.draftStep && entry.draftStep >= 5) {
-                    setSelectedPrompt({
-                        id: session.selectedPromptId || 'draft-prompt',
-                        text: entry.promptText,
-                        tags: [],
-                        isFavorite: false,
-                    });
-                }
+            if (entry.inProgress && !session.promptAnswered) {
+                // Legacy: 5 = stream, 6 = answer. New: 4 = stream, 5 = answer.
+                if (entry.draftStep === 6) setStep(5);
+                else if (entry.draftStep === 5 && session.streamDone) setStep(5);
+                else if (entry.draftStep === 4) setStep(4);
+                else if (entry.draftStep === 5 && !session.streamDone) setStep(4);
             }
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session.date]);
 
-    // Debounced autosave for Step 5 (stream).
+    // Debounced autosave — stream (step 4)
     useEffect(() => {
         if (showCompletion) return;
-        if (step !== 5) return;
+        if (step !== 4) return;
         if (session.streamDone) return;
 
         if (draftSaveTimeoutRef.current) window.clearTimeout(draftSaveTimeoutRef.current);
@@ -117,7 +83,37 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
                     id: session.date,
                     date: session.date,
                     streamText,
-                    promptText: selectedPrompt.text,
+                    promptText: FOCUS_PROMPT.text,
+                    answerText,
+                    actions: [],
+                    inProgress: true,
+                    draftStep: 4,
+                });
+            } finally {
+                isDraftSavingRef.current = false;
+            }
+        }, 600);
+
+        return () => {
+            if (draftSaveTimeoutRef.current) window.clearTimeout(draftSaveTimeoutRef.current);
+        };
+    }, [step, session.date, session.streamDone, streamText, answerText, showCompletion]);
+
+    // Debounced autosave — answer (step 5)
+    useEffect(() => {
+        if (showCompletion) return;
+        if (step !== 5) return;
+        if (session.promptAnswered) return;
+
+        if (draftSaveTimeoutRef.current) window.clearTimeout(draftSaveTimeoutRef.current);
+        draftSaveTimeoutRef.current = window.setTimeout(async () => {
+            isDraftSavingRef.current = true;
+            try {
+                await saveEntry({
+                    id: session.date,
+                    date: session.date,
+                    streamText,
+                    promptText: FOCUS_PROMPT.text,
                     answerText,
                     actions: [],
                     inProgress: true,
@@ -131,37 +127,7 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
         return () => {
             if (draftSaveTimeoutRef.current) window.clearTimeout(draftSaveTimeoutRef.current);
         };
-    }, [step, session.date, session.streamDone, streamText, answerText, selectedPrompt.text, showCompletion]);
-
-    // Debounced autosave for Step 6 (answer).
-    useEffect(() => {
-        if (showCompletion) return;
-        if (step !== 6) return;
-        if (session.promptAnswered) return;
-
-        if (draftSaveTimeoutRef.current) window.clearTimeout(draftSaveTimeoutRef.current);
-        draftSaveTimeoutRef.current = window.setTimeout(async () => {
-            isDraftSavingRef.current = true;
-            try {
-                await saveEntry({
-                    id: session.date,
-                    date: session.date,
-                    streamText,
-                    promptText: selectedPrompt.text,
-                    answerText,
-                    actions: [],
-                    inProgress: true,
-                    draftStep: 6,
-                });
-            } finally {
-                isDraftSavingRef.current = false;
-            }
-        }, 600);
-
-        return () => {
-            if (draftSaveTimeoutRef.current) window.clearTimeout(draftSaveTimeoutRef.current);
-        };
-    }, [step, session.date, session.promptAnswered, streamText, answerText, selectedPrompt.text, showCompletion]);
+    }, [step, session.date, session.promptAnswered, streamText, answerText, showCompletion]);
 
     const handleNext = async () => {
         playSound();
@@ -172,45 +138,36 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
             onUpdateSession({ readAffirmations: true });
             setStep(3);
         } else if (step === 3) {
-            onUpdateSession({
-                readVisualizations: true,
-            });
-            setStep(4);
-        } else if (step === 4) {
-            if (!selectedPrompt?.id) return;
             await saveEntry({
                 id: session.date,
                 date: session.date,
                 streamText,
-                promptText: selectedPrompt.text,
+                promptText: FOCUS_PROMPT.text,
+                answerText,
+                actions: [],
+                inProgress: true,
+                draftStep: 4,
+            });
+            onUpdateSession({
+                readVisualizations: true,
+                promptsReviewed: true,
+                selectedPromptId: FOCUS_PROMPT.id,
+            });
+            setStep(4);
+        } else if (step === 4) {
+            await saveEntry({
+                id: session.date,
+                date: session.date,
+                streamText,
+                promptText: FOCUS_PROMPT.text,
                 answerText,
                 actions: [],
                 inProgress: true,
                 draftStep: 5,
             });
-            onUpdateSession({
-                promptsReviewed: true,
-                selectedPromptId: selectedPrompt.id,
-            });
+            onUpdateSession({ streamDone: true });
             setStep(5);
         } else if (step === 5) {
-            // Ensure the prompt+stream draft marker is aligned with step 6 before switching.
-            await saveEntry({
-                id: session.date,
-                date: session.date,
-                streamText,
-                promptText: selectedPrompt.text,
-                answerText,
-                actions: [],
-                inProgress: true,
-                draftStep: 6,
-            });
-            onUpdateSession({ streamDone: true });
-            setStep(6);
-        } else if (step === 6) {
-            // Save entry and complete
-
-            // Create main action
             const mainActionItem = {
                 id: crypto.randomUUID(),
                 text: answerText,
@@ -223,12 +180,11 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
                 id: session.date,
                 date: session.date,
                 streamText,
-                promptText: selectedPrompt.text,
-                answerText, // Keeping this for record
+                promptText: FOCUS_PROMPT.text,
+                answerText,
                 actions: [mainActionItem],
             });
 
-            // Update streak once per completed day.
             try {
                 const today = getToday();
                 const config = await loadConfig();
@@ -247,7 +203,7 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
                 if (!last) {
                     nextStreak = 1;
                 } else if (last === today) {
-                    nextStreak = nextStreak; // No change
+                    nextStreak = nextStreak;
                 } else {
                     const diffDays = Math.round((todayMs - (lastMs as number)) / 86400000);
                     if (diffDays === 1) nextStreak = nextStreak + 1;
@@ -268,16 +224,12 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
         }
     };
 
-    // Removed 'Focus' from titles
-    const stepTitles = ['Goals', 'Affirmations', 'Visualizations', 'Prompt', 'Write', 'Answer'];
+    const stepTitles = ['Goals', 'Affirmations', 'Visualizations', 'Write', 'Answer'];
 
-    const getIndicatorIndex = (s: WizardStep) => {
-        return s - 1;
-    };
+    const getIndicatorIndex = (s: WizardStep) => s - 1;
 
     return (
         <div className="wizard">
-            {/* Step indicator - minimal */}
             <div className="wizard-progress">
                 {stepTitles.map((title, i) => {
                     const currentIndex = getIndicatorIndex(step);
@@ -291,7 +243,6 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
                 })}
             </div>
 
-            {/* Content */}
             <div className="wizard-content">
                 {step === 1 && (
                     <ReadingStep
@@ -315,26 +266,14 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
                     />
                 )}
                 {step === 4 && (
-                    <PromptStep
-                        prompts={prompts}
-                        selectedPromptId={selectedPrompt.id}
-                        onSelectPrompt={(p) => {
-                            setSelectedPrompt(p);
-                            onUpdateSession({ selectedPromptId: p.id });
-                        }}
-                        onDone={handleNext}
-                    />
-                )}
-                {step === 5 && (
                     <StreamStep
                         value={streamText}
                         onChange={setStreamText}
                         onDone={handleNext}
                     />
                 )}
-                {step === 6 && (
+                {step === 5 && (
                     <AnswerStep
-                        prompt={selectedPrompt}
                         mainAnswer={answerText}
                         onMainAnswerChange={setAnswerText}
                         onDone={handleNext}
@@ -342,8 +281,7 @@ export function Wizard({ session, onUpdateSession, onComplete, onBack }: WizardP
                 )}
             </div>
 
-            {/* Back button */}
-            <button className="wizard-back" onClick={() => { playSound(); onBack(); }}>
+            <button type="button" className="wizard-back" onClick={() => { playSound(); onBack(); }}>
                 ← Back
             </button>
             {showCompletion && <CompletionScreen onFinish={onComplete} />}

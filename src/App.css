@@ -125,6 +125,11 @@ select {
 /* Bump base font size — Patrick Hand reads better slightly larger */
 html {
   font-size: 18px;
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -199,20 +204,16 @@ body,
 .bottom-nav-right {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0;
   pointer-events: auto;
-}
-
-.bottom-nav-right {
-  gap: 4px;
 }
 
 .bottom-nav-zoom {
   display: flex;
   align-items: center;
   gap: 0;
-  padding-right: 6px;
-  margin-right: 4px;
+  padding-right: 4px;
+  margin-right: 2px;
   border-right: 1px solid var(--border);
 }
 
@@ -256,6 +257,7 @@ body,
   font-weight: 300;
   color: var(--foreground);
   margin-bottom: clamp(2px, 0.5vh, 8px);
+  text-wrap: balance;
 }
 
 .session-complete-indicator {
@@ -304,6 +306,9 @@ body,
 
 .start-btn {
   display: inline-block;
+  align-self: flex-start;
+  width: fit-content;
+  max-width: 100%;
   padding: 12px 32px;
   font-size: 15px;
   font-weight: 400;
@@ -312,11 +317,21 @@ body,
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
-  transition: opacity 0.15s;
+  touch-action: manipulation;
+  transition: background-color 0.15s ease;
 }
 
 .start-btn:hover {
-  opacity: 0.9;
+  background: color-mix(in oklch, var(--primary) 88%, black);
+}
+
+.start-btn:active {
+  background: color-mix(in oklch, var(--primary) 78%, black);
+}
+
+.start-btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 
 /* Main Goal Section Responsive Styles */
@@ -686,17 +701,26 @@ body,
   border: none;
   cursor: pointer;
   color: var(--muted-foreground);
-  padding: 4px;
+  padding: 2px;
+  min-width: 28px;
+  min-height: 28px;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: manipulation;
   transition: color 0.2s;
 }
 
 .bottom-nav-btn:hover,
 .theme-toggle:hover {
   color: var(--foreground);
+}
+
+.bottom-nav-btn:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 
 

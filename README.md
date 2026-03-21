@@ -20,9 +20,9 @@ Araw (Filipino for "sun" / "day") helps you start each day with intention throug
 
 | Platform | Download |
 |---|---|
-| macOS (Apple Silicon) | [Download .dmg](https://github.com/lawlozano93/vision/releases/latest) |
-| macOS (Intel) | [Download .dmg](https://github.com/lawlozano93/vision/releases/latest) |
-| Windows | [Download .msi](https://github.com/lawlozano93/vision/releases/latest) |
+| macOS (Apple Silicon) | [Download .dmg](https://github.com/lawlozano93/araw/releases/latest) |
+| macOS (Intel) | [Download .dmg](https://github.com/lawlozano93/araw/releases/latest) |
+| Windows | [Download .msi](https://github.com/lawlozano93/araw/releases/latest) |
 
 ### ⚠️ Installation Notes
 

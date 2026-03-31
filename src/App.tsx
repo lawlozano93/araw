@@ -13,6 +13,8 @@ import { useWindowLabel } from './hooks/useWindowLabel';
 import { useSound, setSoundEnabledPreference } from './hooks/useSound';
 import { listen } from '@tauri-apps/api/event';
 import { getToday, loadConfig } from './hooks/useStorage';
+import { invoke } from '@tauri-apps/api/core';
+import { openUrl } from '@tauri-apps/plugin-opener';
 import './App.css';
 
 type View = 'dashboard' | 'wizard' | 'entry' | 'settings';
@@ -30,6 +32,44 @@ function App() {
     loadConfig()
       .then((c) => setSoundEnabledPreference(c.soundEnabled !== false))
       .catch(() => {});
+  }, [windowLabel]);
+
+  useEffect(() => {
+    if (windowLabel !== 'main') return;
+
+    const run = async () => {
+      try {
+        const ignored = localStorage.getItem('araw:updateCheck:ignoredVersion');
+        const result = await invoke<{
+          current_version: string;
+          latest_version: string | null;
+          latest_tag: string | null;
+          release_url: string | null;
+          update_available: boolean;
+        }>('check_for_updates');
+
+        if (!result.update_available) return;
+        const latest = result.latest_version || result.latest_tag;
+        if (!latest) return;
+        if (ignored && ignored === latest) return;
+
+        const ok = window.confirm(
+          `A new version of Araw is available.\n\nCurrent: ${result.current_version}\nLatest: ${latest}\n\nOpen the download page now?`
+        );
+
+        if (ok && result.release_url) {
+          await openUrl(result.release_url);
+        } else if (!ok) {
+          // If they dismiss, don't nag again today; they can also "skip" by ignoring this version.
+          // (We only set ignore on explicit cancel below to keep behavior simple.)
+          localStorage.setItem('araw:updateCheck:ignoredVersion', latest);
+        }
+      } catch {
+        // Silent failure: update checks should never block app startup.
+      }
+    };
+
+    run();
   }, [windowLabel]);
 
   // TEST MODE: Removed test date selector

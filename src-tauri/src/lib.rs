@@ -1,4 +1,5 @@
 mod storage;
+mod updates;
 
 use storage::{read_file, write_file, list_files, delete_file, get_data_path, set_vault_path, get_vault_path, reset_data};
 use tauri::{
@@ -6,6 +7,7 @@ use tauri::{
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     Emitter, Manager,
 };
+use updates::check_github_latest_release;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -18,6 +20,11 @@ fn show_main_window(window: tauri::Window) {
         let _ = main_window.show();
         let _ = main_window.set_focus();
     }
+}
+
+#[tauri::command]
+async fn check_for_updates() -> Result<updates::UpdateCheckResult, String> {
+    check_github_latest_release().await
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -64,7 +71,7 @@ pub fn run() {
                     if let TrayIconEvent::Click {
                         button: MouseButton::Left,
                         button_state: MouseButtonState::Up,
-                        rect,
+                        rect: _,
                         position,
                         ..
                     } = event
@@ -107,6 +114,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             show_main_window,
+            check_for_updates,
             read_file,
             write_file,
             list_files,
